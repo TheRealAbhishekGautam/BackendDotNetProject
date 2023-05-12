@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@*  Underscore in the name of the view denotes that the view will be used througout the project  *@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -9,6 +10,7 @@
     <link rel="stylesheet" href="~/MyProject0.styles.css" asp-append-version="true" />
 </head>
 <body>
+    @*  This is kinda the main front-end page of your application  *@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
@@ -32,6 +34,7 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
+            @*  This will render the home controller, whatever we will be returning from there, will be displayed here  *@
             @RenderBody()
         </main>
     </div>

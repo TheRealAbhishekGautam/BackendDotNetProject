@@ -1,11 +1,19 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿// In the older versions (.Net 6 and below), there were two files program.cs and startup.cs but now
+// both of these files are combined into a single file i.e. Progran.cs
+// In this file we will have some services, pipelines and middlewares.
+// Always remember whenever we have to configure a pipeline Program.cs is the file.
+// Program.cs is the file which will be executed first inside any project since by-default routing is present here.
+
+var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+// All the dependency injections will be handelled here only.
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+// Pipeline basically means that if a request comes to your application how the application will handle that.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -13,6 +21,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+// app.UseHttpsRedirection() and app.UseStaticFiles() is used to access all of the static files defined inside the wwwroot file.
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
@@ -20,9 +29,13 @@ app.UseRouting();
 
 app.UseAuthorization();
 
+// Telling that on the startup, Home controller will be called
 app.MapControllerRoute(
+    // Routing basically means that whenever the request come to the project where that request will be handelled.
+    // Here if no controller is defined, Home controller will be called and if no action is defined then Index action will be called by-default.
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+// Basically for runnning the project.
 app.Run();
 

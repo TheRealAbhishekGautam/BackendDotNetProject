@@ -1,8 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
+<!--As we add nuget packages inside the project, more and more properties will be added in here.-->
+
   <PropertyGroup>
+    <!--Target framework means the version of .net framework we are using in this project.-->
     <TargetFramework>net7.0</TargetFramework>
+    <!--This is introduced in .Net 6-->
     <Nullable>enable</Nullable>
+    <!--Typically we use a lot of frontend libraries in the project and we neeed to write an import statement above in each file.
+    Using ImplecitUsings enable we can directly use the libraries without actually adding the import statement in every file.-->
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
