@@ -1,14 +1,22 @@
 ﻿// In the older versions (.Net 6 and below), there were two files program.cs and startup.cs but now
 // both of these files are combined into a single file i.e. Progran.cs
-// In this file we will have some services, pipelines and middlewares.
+// In this file we will have some service regestrations, pipelines and middlewares.
 // Always remember whenever we have to configure a pipeline Program.cs is the file.
 // Program.cs is the file which will be executed first inside any project since by-default routing is present here.
+// All the dependency injections will be handelled here only.
+
+using Microsoft.EntityFrameworkCore;
+using MyProject0.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// All the dependency injections will be handelled here only.
 builder.Services.AddControllersWithViews();
+
+// We are basically registring a service AddDbContext (telling the project that we are using ef core) and inside it we are passing
+// the option UseSqlServer and inside it we are passing the connection string that will be used for our connection.
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(
+    builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
