@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
+using MyProject0.Models;
 
 namespace MyProject0.Data
 {
@@ -12,6 +13,14 @@ namespace MyProject0.Data
 		{
 
 		}
+
+		// We have added the connection string that will link the database to our project, we have made a Model
+		// and now we want a table of type Model inside our database.
+		// Here we are telling EF Core to add a table inside our database of type Model.
+
+		public DbSet <Catagory> Catagories { get; set; }
+
+
 	}
 }
 
