@@ -20,7 +20,19 @@ namespace MyProject0.Data
 
 		public DbSet <Catagory> Catagories { get; set; }
 
+		// We can also tell EF Core to add some speciic data inside a table
+		// This is called seeding of the data, we are adding rows from here to the database.
 
+		protected override void OnModelCreating (ModelBuilder modelbuilder)
+		{
+			modelbuilder.Entity<Catagory>().HasData(
+				new Catagory { ID = 1, Name = "SciFi",DisplayOrder=1},
+                new Catagory { ID = 2, Name = "Drama", DisplayOrder = 2 },
+                new Catagory { ID = 3, Name = "Funky", DisplayOrder = 3 }
+                );
+		}
+		// Whenever anything that we need to update from code side to the data side, migration command will be used
+		// Always remember that.
 	}
 }
 
