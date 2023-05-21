@@ -1,1 +1,42 @@
-﻿<h1>Hi Welcome to the catagory view</h1>
+﻿@*
+    Here we are telling the view that a list is passed here from the controller
+    Inside the view we can have C# code along with the frontend code.
+    Just add @ before the C# code and you're good to go.
+*@
+
+@model List<Catagory>
+
+<h1>Hi, Welcome to the catagory view</h1>
+<table class=" table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>
+                Catagory Name
+            </th>
+            <th>
+                Display Order
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @*
+            Since we don't know how many items are there in the database,
+            We can't add the specific number of <tr> tags, so instead we will use a for loop here to print
+            all of the rows on the UI.
+            In the parenthesis of the for loop or anywhere we use the value, M will be capital of the Model
+            however when we accept the values inside the view from the controller, in the first line,
+            m will be smaller in model.
+        *@
+
+        @foreach (var obj in Model.OrderBy( x => x.DisplayOrder))
+         {
+            <tr>
+                <td> @obj.Name </td>
+                <td> @obj.DisplayOrder </td>
+            </tr>
+         }
+         
+    </tbody>
+    
+</table>
