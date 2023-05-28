@@ -1,0 +1,40 @@
+﻿@*
+    Now this Catagory is not passed from controller, it will automatically create a new object of type catagory.
+*@
+
+@model Catagory
+@*
+    We have a method post inside the form, So when we press the submit button, code will search for a POST acion method
+    with the same name from which this view has been called.
+    asp-for is used to tell the input feild that the value is coming for the respective feild inside the model
+    and inside label it is used to print that feild for the user to enter the same.
+    After adding asp-for we don't need to add type attribute inside the input feild since ef will automatically
+    check its type.
+    asp-validation-for is used to print the error message if our server-side validation fails for some reason.
+*@
+<form method="post">
+    <div class="border mt-4 p-3">
+        <div class="row pb-2">
+            <h1 class="text-primary">Create Catagory</h1>
+            <hr />
+        </div>
+        <div class="mb-3 row p-1">
+            <label class="p-0" asp-for="Name"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="mb-3 row p-1">
+            <label class="p-0" asp-for="DisplayOrder"></label>
+            <input asp-for="DisplayOrder" class="form-control" />
+            <span asp-validation-for="DisplayOrder" class="text-danger"></span>
+        </div>
+        <div class="row">
+            <div class="col-6 col-md-3">
+                <button type="submit" class="btn btn-primary form-control">Create</button>
+            </div>
+            <div class="col-6 col-md-3">
+                <a asp-controller="Catagory" asp-action="Index" class="btn btn-secondary border form-control">Back to list</a>
+            </div>
+        </div>
+    </div>
+</form>
