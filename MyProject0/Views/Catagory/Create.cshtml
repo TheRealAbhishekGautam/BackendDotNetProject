@@ -4,11 +4,11 @@
 
 @model Catagory
 @*
-    We have a method post inside the form, So when we press the submit button, code will search for a POST acion method
+    We have a method post inside the form, So when we press the submit button, code will search for a POST action method
     with the same name from which this view has been called.
     asp-for is used to tell the input feild that the value is coming for the respective feild inside the model
     and inside label it is used to print that feild for the user to enter the same.
-    After adding asp-for we don't need to add type attribute inside the input feild since ef will automatically
+    After adding asp-for we don't need to add type-attribute inside the input feild since ef will automatically
     check its type.
     asp-validation-for is used to print the error message if our server-side validation fails for some reason.
 *@
@@ -18,6 +18,13 @@
             <h1 class="text-primary">Create Catagory</h1>
             <hr />
         </div>
+        @*
+            asp-validation-summary = "All" will print a list of all the error messages that had occured inside this page.
+            Along with that the error messages with the respective feilds will also be there.
+            asp-validation-summary="ModelOnly" will print only the error message which are not corrosponds to any of the
+            filds/key.
+        *@
+        <div asp-validation-summary="ModelOnly"></div>
         <div class="mb-3 row p-1">
             <label class="p-0" asp-for="Name"></label>
             <input asp-for="Name" class="form-control" />
@@ -38,3 +45,15 @@
         </div>
     </div>
 </form>
+
+@*
+    We are new adding some Client side validation for that we are importing a partial view from the shared folder.
+    Since inside the shared view, there's only scripts, we are adding scripts here too.
+    partial keyword will find the partial view of the same name as given inside the Shared folder automatically.
+*@
+
+@section Scripts {
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}
