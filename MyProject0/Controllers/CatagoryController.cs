@@ -58,6 +58,11 @@ namespace MyProject0.Controllers
                 _db.Add(obj);
                 // We can add multiple objects then save it once.
                 _db.SaveChanges();
+                // TempData is a pre-defined array, inside which the data will be available only till the next render.
+                // We can add some confirmation messages inside this.
+                // Success is the unique key that will be used to get this message inside the tempdata.
+                // We don't even have to import this to the views, it's available there already.
+                TempData["Success"] = "The Record has been added successfully";
                 // Now after adding the values inside the db, we have to refresh code side too for seeing the updated values.
                 // For that we are using a function RedirectToAction,
                 // Using this we can redirect to any of the action within any of the controller.
@@ -88,11 +93,11 @@ namespace MyProject0.Controllers
 
             // FirstorDefault will find weather the given recored exists or not, if not it will return a null object
             // It also works wiht the non-primary columns
-            Catagory? catagoryfromDB1 = _db.Catagories.FirstOrDefault(x => x.ID==id);
+            // Catagory? catagoryfromDB1 = _db.Catagories.FirstOrDefault(x => x.ID==id);
 
             // Where will return all of the values which matches with the given parameter.
             // It also works wiht the non-primary columns.
-            Catagory? catagoryfromDB2 = _db.Catagories.Where( x => x.ID == id).FirstOrDefault();
+            // Catagory? catagoryfromDB2 = _db.Catagories.Where( x => x.ID == id).FirstOrDefault();
 
 
             if (catagoryfromDB == null)
@@ -100,32 +105,63 @@ namespace MyProject0.Controllers
                 return NotFound();
             }
 
-            return View();
+            return View(catagoryfromDB);
         }
 
         [HttpPost]
         public IActionResult Edit(Catagory obj)
         {
-            if (obj.Name == obj.DisplayOrder.ToString())
-            {
-                ModelState.AddModelError("name", "The Name and Display Order must have different values");
-            }
-
-            if (obj.Name.ToLower() == "test")
-            {
-                ModelState.AddModelError("", "Item name test is not allowed");
-            }
-
             if (ModelState.IsValid)
             {
-                _db.Add(obj);
+                _db.Update(obj);
                 _db.SaveChanges();
+                TempData["Success"] = "The Record has been modified successfully";
                 return RedirectToAction("Index");
             }
 
             return View();
 
         }
+
+        public IActionResult Delete(int? id)
+        {
+            if (id == 0 || id == null)
+            {
+                return NotFound();
+            }
+
+            Catagory? catagoryfromDB = _db.Catagories.Find(id);
+
+            if (catagoryfromDB == null)
+            {
+                return NotFound();
+            }
+
+            return View(catagoryfromDB);
+        }
+
+        // Since when we return the corrosponding data from the view, it will search for the
+        // Same name action method inside this Controller however we can't have the same name
+        // ActionMethods with the same parameteres, so we are changing it's name and telling the
+        // compiler that its what you are finding inside the ActionName.
+
+        [HttpPost, ActionName("Delete")]
+        public IActionResult DeletePost (int? id)
+        {
+            Catagory? obj = _db.Catagories.Find(id);
+
+            if(obj == null)
+            {
+                return NotFound();
+            }
+
+            _db.Catagories.Remove(obj);
+            _db.SaveChanges();
+            TempData["Success"] = "The Record has been deleted successfully";
+            return RedirectToAction("Index");
+
+        }
+
     }
 }
 

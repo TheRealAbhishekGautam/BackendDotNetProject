@@ -6,67 +6,65 @@
 
 @model List<Catagory>
 
-<div class="container">
-    <div class="row pt-5 pb-3">
-        <div class="col-6">
-            <h1>
-                Catagory List
-            </h1>
-        </div>
-        <div class="col-6 text-end">
-            @*
-                So we have added a button to add a new catagory so we will be redirected to a new page/veiw from here
-                Now we can'just jump from this view to another veiw, we will add a new action method inside the controller
-                which will be triggred from anchor tag here and that action method will be returning a view from there.
-            *@
-            <a asp-controller="Catagory" asp-action="Create" class="btn btn-primary">
-                <i class="bi bi-plus-lg"></i> Add a new Catagory
-            </a>
+    <div class="container">
+        <div class="row pt-5 pb-3">
+            <div class="col-6">
+                <h1>
+                    Catagory List
+                </h1>
+            </div>
+            <div class="col-6 text-end">
+                @*
+                    So we have added a button to add a new catagory so we will be redirected to a new page/veiw from here
+                    Now we can'just jump from this view to another veiw, we will add a new action method inside the controller
+                    which will be triggred from anchor tag here and that action method will be returning a view from there.
+                *@
+                <a asp-controller="Catagory" asp-action="Create" class="btn btn-primary">
+                    <i class="bi bi-plus-lg"></i> Add a new Catagory
+                </a>
+            </div>
         </div>
     </div>
-</div>
-<table class=" table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>
-                Catagory Name
-            </th>
-            <th>
-                Display Order
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-
-        @*
-            Since we don't know how many items are there in the database,
-            We can't add the specific number of <tr> tags, so instead we will use a for loop here to print
-            all of the rows on the UI.
-            In the parenthesis of the for loop or anywhere we use the value, M will be capital of the Model
-            however when we accept the values inside the view from the controller, in the first line,
-            m will be smaller in model.
-            asp-route-id will pass the respective id from here to the controller.
-        *@
-
-        @foreach (var obj in Model.OrderBy(x => x.DisplayOrder))
-        {
+    <table class=" table table-bordered table-striped">
+        <thead>
             <tr>
-                <td> @obj.Name </td>
-                <td> @obj.DisplayOrder </td>
-                <td>
-                    <a asp-controller="Catagory" asp-action="Edit" asp-route-id="@obj.ID" class="btn btn-primary mx-2">
-                        <i class="bi bi-pencil-square"></i> Edit
-                    </a>
-                </td>
-                <td>
-                    <a asp-controller="Catagory" asp-action="Delete" class="btn btn-danger mx-2">
-                        <i class="bi bi-trash3-fill"></i> Delete
-                    </a>
-                </td>
+                <th>
+                    Catagory Name
+                </th>
+                <th>
+                    Display Order
+                </th>
+                <th></th>
             </tr>
-        }
+        </thead>
+        <tbody>
 
-    </tbody>
+            @*
+                Since we don't know how many items are there in the database,
+                We can't add the specific number of <tr> tags, so instead we will use a for loop here to print
+                all of the rows on the UI.
+                In the parenthesis of the for loop or anywhere we use the value, M will be capital of the Model
+                however when we accept the values inside the view from the controller, in the first line,
+                m will be smaller in model.
+                asp-route-id will pass the respective id from here to the controller.
+            *@
 
-</table>
+            @foreach (var obj in Model.OrderBy(x => x.DisplayOrder))
+            {
+                <tr>
+                    <td> @obj.Name </td>
+                    <td> @obj.DisplayOrder </td>
+                    <td>
+                        <a asp-controller="Catagory" asp-action="Edit" asp-route-id="@obj.ID" class="btn btn-primary mx-2">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </a>
+                        <a asp-controller="Catagory" asp-action="Delete" asp-route-id="@obj.ID" class="btn btn-danger mx-2">
+                            <i class="bi bi-trash3-fill"></i> Delete
+                        </a>
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
