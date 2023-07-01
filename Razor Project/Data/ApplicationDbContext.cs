@@ -10,9 +10,9 @@ namespace Razor_Project.Data
 		{
 		}
 
-		public DbSet <Catagory> Catagories;
+		public DbSet <Catagory> Catagories { get; set; }
 
-        protected override void OnModelCreating (ModelBuilder modelBuilder)
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			modelBuilder.Entity<Catagory>().HasData(
 				new Catagory { ID = 1, Name = "SciFi", DisplayOrder = 1 },
@@ -22,4 +22,3 @@ namespace Razor_Project.Data
 		}
 	}
 }
-
