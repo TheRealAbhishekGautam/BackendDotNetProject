@@ -1,0 +1,41 @@
+﻿@page
+@model Razor_Project.Pages.Catagories.EditModel
+
+<form method="post">
+    @*
+        Inside the next line we are preserving the catagory ID that we need to update and if we don't preserve it
+        Then every time when we edit the catagory it will add a new catagory instead of updating the existing one.
+    *@
+    <input asp-for="Catagory.ID" hidden />
+    <div class="border mt-4 p-3">
+        <div class="row pb-2">
+            <h1 class="text-primary">Edit Catagory</h1>
+            <hr />
+        </div>
+        <div asp-validation-summary="ModelOnly"></div>
+        <div class="mb-3 row p-1">
+            <label class="p-0" asp-for="Catagory.Name"></label>
+            <input asp-for="Catagory.Name" class="form-control" />
+            <span asp-validation-for="Catagory.Name" class="text-danger"></span>
+        </div>
+        <div class="mb-3 row p-1">
+            <label class="p-0" asp-for="Catagory.DisplayOrder"></label>
+            <input asp-for="Catagory.DisplayOrder" class="form-control" />
+            <span asp-validation-for="Catagory.DisplayOrder" class="text-danger"></span>
+        </div>
+        <div class="row">
+            <div class="col-6 col-md-3">
+                <button type="submit" class="btn btn-primary form-control">Update</button>
+            </div>
+            <div class="col-6 col-md-3">
+                <a asp-page ="/Catagories/Index" class="btn btn-secondary border form-control">Back to list</a>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts{
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}

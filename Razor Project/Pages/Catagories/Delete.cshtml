@@ -1,7 +1,8 @@
-﻿@model Catagory
+﻿@page
+@model Razor_Project.Pages.Catagories.DeleteModel
 
 <form method="post">
-    <input asp-for="ID" hidden />
+    <input asp-for="Catagory.ID" hidden />
     <div class="border mt-4 p-3">
         <div class="row pb-2">
             <h1 class="text-primary">Edit Catagory</h1>
@@ -9,19 +10,19 @@
         </div>
         <div asp-validation-summary="ModelOnly"></div>
         <div class="mb-3 row p-1">
-            <label class="p-0" asp-for="Name"></label>
-            <input asp-for="Name" disabled class="form-control" />
+            <label class="p-0" asp-for="Catagory.Name"></label>
+            <input asp-for="Catagory.Name" disabled class="form-control" />
         </div>
         <div class="mb-3 row p-1">
-            <label class="p-0" asp-for="DisplayOrder"></label>
-            <input asp-for="DisplayOrder" disabled class="form-control" />
+            <label class="p-0" asp-for="Catagory.DisplayOrder"></label>
+            <input asp-for="Catagory.DisplayOrder" disabled class="form-control" />
         </div>
         <div class="row">
             <div class="col-6 col-md-3">
                 <button type="submit" class="btn btn-danger form-control">Delete</button>
             </div>
             <div class="col-6 col-md-3">
-                <a asp-controller="Catagory" asp-action="Index" class="btn btn-secondary border form-control">Back to list</a>
+                <a asp-page="/Catagory/index" class="btn btn-secondary border form-control">Back to list</a>
             </div>
         </div>
     </div>
