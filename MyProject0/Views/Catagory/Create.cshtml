@@ -4,48 +4,57 @@
 
 @model Catagory
 
-@*
-    We have a method post inside the form, So when we press the submit button, code will search for a POST action method
-    with the same name from which this view has been called.
-    asp-for is used to tell the input feild that the value is coming for the respective feild inside the model
-    and inside label it is used to print that feild for the user to enter the same.
-    After adding asp-for we don't need to add type-attribute inside the input feild since ef will automatically
-    check its type.
-    asp-validation-for is used to print the error message if our server-side validation fails for some reason.
-*@
-<form method="post">
-    <div class="border mt-4 p-3">
-        <div class="row pb-2">
-            <h1 class="text-primary">Create Catagory</h1>
-            <hr />
-        </div>
-        @*
-            asp-validation-summary = "All" will print a list of all the error messages that had occured inside this page.
-            Along with that the error messages with the respective feilds will also be there.
-            asp-validation-summary="ModelOnly" will print only the error message which are not corrosponds to any of the
-            filds/key.
-        *@
-        <div asp-validation-summary="ModelOnly"></div>
-        <div class="mb-3 row p-1">
-            <label class="p-0" asp-for="Name"></label>
-            <input asp-for="Name" class="form-control" />
-            <span asp-validation-for="Name" class="text-danger"></span>
-        </div>
-        <div class="mb-3 row p-1">
-            <label class="p-0" asp-for="DisplayOrder"></label>
-            <input asp-for="DisplayOrder" class="form-control" />
-            <span asp-validation-for="DisplayOrder" class="text-danger"></span>
-        </div>
+<div class="card shadow border-0 mt-4">
+    <div class="card-header bg-secondary bg-gradient ml-0 py-3">
         <div class="row">
-            <div class="col-6 col-md-3">
-                <button type="submit" class="btn btn-primary form-control">Create</button>
-            </div>
-            <div class="col-6 col-md-3">
-                <a asp-controller="Catagory" asp-action="Index" class="btn btn-secondary border form-control">Back to list</a>
+            <div class="col-12 text-center">
+                <h1 class="text-white py-2">Create Catagory</h1>
             </div>
         </div>
     </div>
-</form>
+    <div class="card-body p-4">
+        @*
+        We have a method post inside the form, So when we press the submit button, code will search for a POST action method
+        with the same name from which this view has been called.
+        asp-for is used to tell the input feild that the value is coming for the respective feild inside the model
+        and inside label it is used to print that feild for the user to enter the same.
+        After adding asp-for we don't need to add type-attribute inside the input feild since ef will automatically
+        check its type.
+        asp-validation-for is used to print the error message if our server-side validation fails for some reason.
+        *@
+        <form method="post" class="row">
+            <div class="border p-3">
+                @*
+                asp-validation-summary = "All" will print a list of all the error messages that had occured inside this page.
+                Along with that the error messages with the respective feilds will also be there.
+                asp-validation-summary="ModelOnly" will print only the error message which are not corrosponds to any of the
+                filds/key.
+                *@
+                <div asp-validation-summary="ModelOnly"></div>
+                <div class="form-floating py-2 col-12">
+                    <input asp-for="Name" class="form-control border-0 shadow" />
+                    <label asp-for="Name" class="ms-2"></label>
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-floating py-2 col-12">
+                    <input asp-for="DisplayOrder" class="form-control border-0 shadow" />
+                    <label asp-for="DisplayOrder" class="ms-2"></label>
+                    <span asp-validation-for="DisplayOrder" class="text-danger"></span>
+                </div>
+                <div class="row pt-2">
+                    <div class="col-6 col-md-3">
+                        <button type="submit" class="btn btn-primary form-control">Create</button>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <a asp-controller="Catagory" asp-action="Index" class="btn btn-outline-primary border form-control">Back to list</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+
 
 @*
     We are new adding some Client side validation for that we are importing a partial view from the shared folder.
