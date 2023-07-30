@@ -7,6 +7,8 @@
 
 using Microsoft.EntityFrameworkCore;
 using MyProject0.Data;
+using MyProject0.DataAccess.Repository;
+using MyProject0.DataAccess.Repository.IRepository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,8 @@ builder.Services.AddControllersWithViews();
 // the option UseSqlServer and inside it we are passing the connection string that will be used for our connection.
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(
     builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
 
 var app = builder.Build();
 

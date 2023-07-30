@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MyProject0.Data;
+using MyProject0.DataAccess.Repository.IRepository;
 using MyProject0.Models;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -13,15 +14,15 @@ namespace MyProject0.Controllers
     public class CatagoryController : Controller
     {
         // Here we are assining all the values from our ApplicationDbContext to a local variable.
-        private readonly ApplicationDbContext _db;
-        public CatagoryController(ApplicationDbContext db)
+        private readonly IUnitOfWork _UnitOfWork;
+        public CatagoryController(IUnitOfWork UnitOfWork)
         {
-            _db = db;
+            _UnitOfWork = UnitOfWork;
         }
         
         public IActionResult Index()
         {
-            List <Catagory> objCatagoryList = _db.Catagories.ToList();
+            List <Catagory> objCatagoryList = _UnitOfWork.Catagory.GetAll().ToList();
             return View(objCatagoryList);
         }
 
@@ -55,9 +56,9 @@ namespace MyProject0.Controllers
             {
                 // Now since we get the values of the object that needs to be added inside the database,
                 // we will use ef core to add those values to the db.
-                _db.Add(obj);
+                _UnitOfWork.Catagory.Add(obj);
                 // We can add multiple objects then save it once.
-                _db.SaveChanges();
+                _UnitOfWork.Save();
                 // TempData is a pre-defined array, inside which the data will be available only till the next render.
                 // We can add some confirmation messages inside this.
                 // Success is the unique key that will be used to get this message inside the tempdata.
@@ -88,8 +89,10 @@ namespace MyProject0.Controllers
                 return NotFound();
             }
 
+            Catagory? catagoryfromDB = _UnitOfWork.Catagory.Get(x => x.ID == id);
+
             // Find() will find the row with the help of the given primary key.
-            Catagory? catagoryfromDB = _db.Catagories.Find(id);
+            //Catagory? catagoryfromDB = _db.Catagories.Find(id);
 
             // FirstorDefault will find weather the given recored exists or not, if not it will return a null object
             // It also works wiht the non-primary columns
@@ -113,8 +116,8 @@ namespace MyProject0.Controllers
         {
             if (ModelState.IsValid)
             {
-                _db.Update(obj);
-                _db.SaveChanges();
+                _UnitOfWork.Catagory.Update(obj);
+                _UnitOfWork.Save();
                 TempData["Success"] = "The Record has been modified successfully";
                 return RedirectToAction("Index");
             }
@@ -130,7 +133,7 @@ namespace MyProject0.Controllers
                 return NotFound();
             }
 
-            Catagory? catagoryfromDB = _db.Catagories.Find(id);
+            Catagory? catagoryfromDB = _UnitOfWork.Catagory.Get(x => x.ID == id);
 
             if (catagoryfromDB == null)
             {
@@ -148,15 +151,15 @@ namespace MyProject0.Controllers
         [HttpPost, ActionName("Delete")]
         public IActionResult DeletePost (int? id)
         {
-            Catagory? obj = _db.Catagories.Find(id);
+            Catagory? obj = _UnitOfWork.Catagory.Get(x => x.ID == id);
 
-            if(obj == null)
+            if (obj == null)
             {
                 return NotFound();
             }
 
-            _db.Catagories.Remove(obj);
-            _db.SaveChanges();
+            _UnitOfWork.Catagory.Remove(obj);
+            _UnitOfWork.Save();
             TempData["Success"] = "The Record has been deleted successfully";
             return RedirectToAction("Index");
 
