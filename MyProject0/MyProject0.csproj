@@ -30,18 +30,18 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <None Remove="Views\Catagory\" />
+    <None Remove="Controllers\" />
+    <None Remove="Areas\Admin\Views\Catagory\" />
+    <None Remove="Areas\Customer\Views\Home\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\Admin\Controllers\" />
-    <Folder Include="Areas\Admin\Data\" />
-    <Folder Include="Areas\Admin\Models\" />
     <Folder Include="Areas\Admin\Views\" />
     <Folder Include="Areas\Customer\Controllers\" />
-    <Folder Include="Areas\Customer\Data\" />
-    <Folder Include="Areas\Customer\Models\" />
     <Folder Include="Areas\Customer\Views\" />
-    <Folder Include="Views\Catagory\" />
+    <Folder Include="Controllers\" />
+    <Folder Include="Areas\Admin\Views\Catagory\" />
+    <Folder Include="Areas\Customer\Views\Home\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MyProject0.DataAccess\MyProject0.DataAccess.csproj">

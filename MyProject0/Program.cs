@@ -46,7 +46,7 @@ app.MapControllerRoute(
     // Routing basically means that whenever the request come to the project where that request will be handelled.
     // Here if no controller is defined, Home controller will be called and if no action is defined then Index action will be called by-default.
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}");
 
 // Basically for runnning the project.
 app.Run();

@@ -9,8 +9,10 @@ using MyProject0.Models;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace MyProject0.Controllers
+namespace MyProject0.Areas.Admin.Controllers
 {
+    // Telling the controller that you bolongs to which area.
+    [Area("Admin")]
     public class CatagoryController : Controller
     {
         // Here we are assining all the values from our ApplicationDbContext to a local variable.

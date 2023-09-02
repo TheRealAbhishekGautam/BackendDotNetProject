@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using MyProject0.Models;
 
-namespace MyProject0.Controllers;
+namespace MyProject0.Areas.Customers.Controllers;
 
+// Telling the controller that you corrosponds to which area.
+[Area("Customer")]
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
