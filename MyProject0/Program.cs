@@ -6,7 +6,7 @@
 // All the dependency injections will be handelled here only.
 
 using Microsoft.EntityFrameworkCore;
-using MyProject0.Data;
+using MyProject0.DataAccess.Data;
 using MyProject0.DataAccess.Repository;
 using MyProject0.DataAccess.Repository.IRepository;
 

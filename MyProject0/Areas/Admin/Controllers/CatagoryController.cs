@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using MyProject0.Data;
+using MyProject0.DataAccess.Data;
 using MyProject0.DataAccess.Repository.IRepository;
 using MyProject0.Models;
 

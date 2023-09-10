@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using MyProject0.Data;
+using MyProject0.DataAccess.Data;
 using MyProject0.DataAccess.Repository.IRepository;
 
 namespace MyProject0.DataAccess.Repository
