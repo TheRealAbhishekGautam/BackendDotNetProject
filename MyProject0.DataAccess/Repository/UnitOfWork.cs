@@ -8,11 +8,13 @@ namespace MyProject0.DataAccess.Repository
 	{
         private readonly ApplicationDbContext _db;
         public ICatagoryRepository Catagory { get; set; }
+        public IProductRepository Product { get; set; }
 
         public UnitOfWork(ApplicationDbContext db)
 		{
             _db = db;
             Catagory = new CatagoryRepository(_db);
+            Product = new ProductRepository(_db);
         }
 
         public void Save()
