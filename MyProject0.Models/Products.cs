@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MyProject0.Models
 {
@@ -35,6 +36,15 @@ namespace MyProject0.Models
         [Display(Name = "Price for 100+")]
         [Range(1, 100)]
         public double Price100 { get; set; }
+
+        // CatagoryId is a property which will contain the Id of the catagory 
+        public int CatagoryId { get; set; }
+
+        // Here we are actually telling to store the value of foreign key from Catagory property to CatagoryId property defined here.
+        [ForeignKey("CatagoryId")]
+        public Catagory Catagory { get; set; }
+
+        public string ImageUrl { get; set; }
 
     }
 }

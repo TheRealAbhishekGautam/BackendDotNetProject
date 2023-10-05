@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using MyProject0.DataAccess.Data;
 using MyProject0.DataAccess.Repository.IRepository;
 using MyProject0.Models;
@@ -17,6 +18,18 @@ namespace MyProject0.Areas.Admin.Controllers
         public IActionResult Index()
         {
             List<Product> productsList = _UnitOfWork.Product.GetAll().ToList();
+
+            // This is called Projections in .Net, It's a very powerful thing since we are actually converting
+            // an object of one type to another and only considering the required properties.
+            IEnumerable<SelectListItem> CatagoryList = _UnitOfWork.Catagory.GetAll()
+                                                       .Select(x => new SelectListItem()
+                                                       {
+                                                           Text = x.Name,
+                                                           Value = x.ID.ToString()
+                                                       });
+            // In the return statement we can only return one thing at a time to the View,
+            // What if we want to return more than one thing or multiple views to the view.?
+            // In that requirement we use ViewBag/ViewData/ViewModels.
             return View(productsList);
         }
         public IActionResult Create()
