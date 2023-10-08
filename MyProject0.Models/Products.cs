@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -42,8 +43,10 @@ namespace MyProject0.Models
 
         // Here we are actually telling to store the value of foreign key from Catagory property to CatagoryId property defined here.
         [ForeignKey("CatagoryId")]
+        [ValidateNever]
         public Catagory Catagory { get; set; }
 
+        [ValidateNever]
         public string ImageUrl { get; set; }
 
     }

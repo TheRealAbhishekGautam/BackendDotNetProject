@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using MyProject0.DataAccess.Data;
 using MyProject0.DataAccess.Repository.IRepository;
 using MyProject0.Models;
+using MyProject0.Models.ViewModels;
 using System.Collections.Generic;
 
 namespace MyProject0.Areas.Admin.Controllers
@@ -18,10 +19,13 @@ namespace MyProject0.Areas.Admin.Controllers
         public IActionResult Index()
         {
             List<Product> productsList = _UnitOfWork.Product.GetAll().ToList();
-
+            return View(productsList);
+        }
+        public IActionResult Create()
+        {
             // This is called Projections in .Net, It's a very powerful thing since we are actually converting
             // an object of one type to another and only considering the required properties.
-            IEnumerable<SelectListItem> CatagoryList = _UnitOfWork.Catagory.GetAll()
+            IEnumerable<SelectListItem> MyCatagoryList = _UnitOfWork.Catagory.GetAll()
                                                        .Select(x => new SelectListItem()
                                                        {
                                                            Text = x.Name,
@@ -30,23 +34,34 @@ namespace MyProject0.Areas.Admin.Controllers
             // In the return statement we can only return one thing at a time to the View,
             // What if we want to return more than one thing or multiple views to the view.?
             // In that requirement we use ViewBag/ViewData/ViewModels.
-            return View(productsList);
-        }
-        public IActionResult Create()
-        {
-            return View();
+
+            // ViewBag.CatagoryList = CatagoryList;
+            // ViewData["CatagoryList"] = CatagoryList;
+            ProductsVM obj = new ProductsVM() {
+                CatagoryList = MyCatagoryList,
+                Product = new Product()
+            };
+            return View(obj);
         }
         [HttpPost]
-        public IActionResult Create(Product obj)
+        public IActionResult Create(ProductsVM obj)
         {
             if (ModelState.IsValid)
             {
-                _UnitOfWork.Product.Add(obj);
+                _UnitOfWork.Product.Add(obj.Product);
                 _UnitOfWork.Save();
                 TempData["Success"] = "The Product has been added successfully";
                 return RedirectToAction("Index");
             }
-            return View();
+            else{
+                // We are sending this list again because old one will be gone.
+                obj.CatagoryList = _UnitOfWork.Catagory.GetAll().Select(x => new SelectListItem()
+                {
+                    Text = x.Name,
+                    Value = x.ID.ToString()
+                });
+                return View(obj);
+            }
         }
         public IActionResult Edit(int? id)
         {
