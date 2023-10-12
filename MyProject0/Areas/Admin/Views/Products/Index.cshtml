@@ -8,7 +8,7 @@
                 </h1>
             </div>
             <div class="col-6 text-end">
-                <a asp-controller="Products" asp-action="Create" class="btn btn-primary">
+                <a asp-controller="Products" asp-action="Upsert" class="btn btn-primary">
                     <i class="bi bi-plus-lg"></i> Add a new Product
                 </a>
             </div>
@@ -35,7 +35,7 @@
                     <td> @obj.Author </td>
                     <td>  </td>
                     <td>
-                        <a asp-controller="Products" asp-action="Edit" asp-route-id="@obj.Id" class="btn btn-primary mx-2">
+                        <a asp-controller="Products" asp-action="Upsert" asp-route-id="@obj.Id" class="btn btn-primary mx-2">
                             <i class="bi bi-pencil-square"></i> Edit
                         </a>
                         <a asp-controller="Products" asp-action="Delete" asp-route-id="@obj.Id" class="btn btn-danger mx-2">
