@@ -12,9 +12,13 @@ namespace MyProject0.Areas.Admin.Controllers
     public class ProductsController : Controller
     {
         internal readonly IUnitOfWork _UnitOfWork;
-        public ProductsController(IUnitOfWork unitofwork)
+        
+        // This is the Interface which will be used to access the files inside wwwroot (The place where all of the static files are stored)
+        internal readonly IWebHostEnvironment _WebHostEnvironment;
+        public ProductsController(IUnitOfWork unitofwork, IWebHostEnvironment webHostEnvironment)
         {
             _UnitOfWork = unitofwork;
+            _WebHostEnvironment = webHostEnvironment;
         }
         public IActionResult Index()
         {
@@ -57,6 +61,26 @@ namespace MyProject0.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+                // WebRootPath will give us the path of the wwwroot folder.
+                string wwwRootPath = _WebHostEnvironment.WebRootPath;
+                if (file != null)
+                {
+                    // Since the file that was uploaded by the user can be of any name 
+                    // We are changing it by a new guid + the actual extention given by the file from the user.
+                    string FileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+
+                    // We are combining the path of the actual wwwroot folder with the path at which we are adding the images of products.
+                    // Now the ProductPath is the actual path at which we are supposed to add the images of Products.
+                    string ProductPath = Path.Combine(wwwRootPath, @"images/products");
+
+                    // Now we have the new name of the file and the location where we are suposed to save/add the file
+                    // Let's add it
+                    using (var FileStream = new FileStream (Path.Combine(ProductPath,FileName),FileMode.Create))
+                    {
+                        file.CopyTo(FileStream);
+                    }
+                    obj.Product.ImageUrl = @"/images/products/" + FileName;
+                }
                 _UnitOfWork.Product.Add(obj.Product);
                 _UnitOfWork.Save();
                 TempData["Success"] = "The Product has been added successfully";

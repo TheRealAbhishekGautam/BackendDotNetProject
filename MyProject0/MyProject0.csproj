@@ -45,6 +45,7 @@
     <Folder Include="Areas\Customer\Views\" />
     <Folder Include="Areas\Admin\Views\Catagory\" />
     <Folder Include="Areas\Customer\Views\Home\" />
+    <Folder Include="wwwroot\images\products\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MyProject0.DataAccess\MyProject0.DataAccess.csproj">
