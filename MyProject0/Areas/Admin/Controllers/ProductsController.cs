@@ -65,8 +65,8 @@ namespace MyProject0.Areas.Admin.Controllers
                 string wwwRootPath = _WebHostEnvironment.WebRootPath;
                 if (file != null)
                 {
-                    // Since the file that was uploaded by the user can be of any name 
-                    // We are changing it by a new guid + the actual extention given by the file from the user.
+                    // Since the file that was uploaded by the user can be of any name and the user can add multiple images with the same name for multiple products
+                    // So, We are changing it by a new guid + the actual extention given by the file from the user.
                     string FileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
 
                     // We are combining the path of the actual wwwroot folder with the path at which we are adding the images of products.
