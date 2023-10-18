@@ -73,6 +73,17 @@ namespace MyProject0.Areas.Admin.Controllers
                     // Now the ProductPath is the actual path at which we are supposed to add the images of Products.
                     string ProductPath = Path.Combine(wwwRootPath, @"images/products");
 
+                    // If we are updating a Product's image then we also need to delete the old image corrosponding to that product
+                    if(!string.IsNullOrEmpty(obj.Product.ImageUrl))
+                    {
+                        var OldImagePath = Path.Combine(wwwRootPath,obj.Product.ImageUrl.TrimStart('/'));
+
+                        if(System.IO.File.Exists(OldImagePath))
+                        {
+                            System.IO.File.Delete(OldImagePath);
+                        }
+                    }
+
                     // Now we have the new name of the file and the location where we are suposed to save/add the file
                     // Let's add it
                     using (var FileStream = new FileStream (Path.Combine(ProductPath,FileName),FileMode.Create))
@@ -81,7 +92,18 @@ namespace MyProject0.Areas.Admin.Controllers
                     }
                     obj.Product.ImageUrl = @"/images/products/" + FileName;
                 }
-                _UnitOfWork.Product.Add(obj.Product);
+                
+                // Creating Case
+                if(obj.Product.Id == 0)
+                {
+                    _UnitOfWork.Product.Add(obj.Product);
+                }
+                // Updating Case
+                else
+                {
+                    _UnitOfWork.Product.Update(obj.Product);
+                }
+                
                 _UnitOfWork.Save();
                 TempData["Success"] = "The Product has been added successfully";
                 return RedirectToAction("Index");
