@@ -22,7 +22,7 @@ namespace MyProject0.Areas.Admin.Controllers
         }
         public IActionResult Index()
         {
-            List<Product> productsList = _UnitOfWork.Product.GetAll().ToList();
+            List<Product> productsList = _UnitOfWork.Product.GetAll(IncludeProperties:"Catagory").ToList();
             return View(productsList);
         }
         // Upsert is a combination of Update and Insert i.e. we are doing both of the things inside the same view.

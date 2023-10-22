@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using MyProject0.DataAccess.Data;
 using MyProject0.DataAccess.Repository.IRepository;
+using Newtonsoft.Json.Linq;
 
 namespace MyProject0.DataAccess.Repository
 {
@@ -17,6 +18,7 @@ namespace MyProject0.DataAccess.Repository
             _db = db;
             // Now this is equivalent to : _db.Catagories == dbSet (This Internal Variable)
             this.dbSet = _db.Set<T>();
+            _db.Product.Include(x => x.Catagory).Include(x => x.CatagoryId);
         }
 
         public void Add(T entity)
@@ -29,19 +31,30 @@ namespace MyProject0.DataAccess.Repository
             dbSet.Add(entity);
         }
 
-        public T Get(Expression<Func<T, bool>> filter)
+        public T Get(Expression<Func<T, bool>> filter, string? IncludeProperties = null)
         {
-            IEnumerable<T> query = dbSet;
-            // I was getting this error
-            // cannot convert from 'System.Linq.Expressions.Expression<System.Func<T, bool>>' to 'System.Func<T, bool>'
-            // So for resilving it we have to use .Compile() function.
-            query = query.Where(filter.Compile());
+            IQueryable<T> query = dbSet;
+            query = query.Where(filter);
+            if (!string.IsNullOrEmpty(IncludeProperties))
+            {
+                foreach (var i in IncludeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(i);
+                }
+            }
             return query.FirstOrDefault();
         }
 
-        public IEnumerable<T> GetAll()
+        public IEnumerable<T> GetAll(string? IncludeProperties = null)
         {
-            IEnumerable<T> values = dbSet;
+            IQueryable<T> values = dbSet;
+            if (!string.IsNullOrEmpty(IncludeProperties))
+            {
+                foreach(var i in IncludeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    values = values.Include(i);
+                }
+            }
             return values.ToList();
         }
 
