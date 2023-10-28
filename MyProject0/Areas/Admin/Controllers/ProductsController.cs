@@ -197,6 +197,8 @@ namespace MyProject0.Areas.Admin.Controllers
 
         }
         */
+        
+        /*
         public IActionResult Delete(int? id)
         {
             if (id == 0 || id == null)
@@ -230,13 +232,36 @@ namespace MyProject0.Areas.Admin.Controllers
             return RedirectToAction("Index");
 
         }
+        */
         #region API Calls
+
         [HttpGet]
         public IActionResult GetAll ()
         {
             List<Product> ProductsList = _UnitOfWork.Product.GetAll(IncludeProperties: "Catagory").ToList();
             return Json(new { data = ProductsList });
         }
+        [HttpDelete]
+        public IActionResult Delete(int? id)
+        {
+            Product ProductToDelete = _UnitOfWork.Product.Get(x => x.Id == id);
+            if (ProductToDelete == null)
+            {
+                return Json(new { success = false, message = "Error while deleting" });
+            }
+            // Remember whenever we are deleting the product we also need to delete it's corrosponding image 
+            var OldImagePath = Path.Combine(_WebHostEnvironment.WebRootPath, ProductToDelete.ImageUrl.TrimStart('/'));
+
+            if (System.IO.File.Exists(OldImagePath))
+            {
+                System.IO.File.Delete(OldImagePath);
+            }
+            _UnitOfWork.Product.Remove(ProductToDelete); 
+            _UnitOfWork.Save();
+            return Json(new { success = true, message = "Deleted Successful" });
+            // We don't want any view to show at the time of deleting just add a notification that the Product is deleted Successfully.
+        }
+
         #endregion
     }
 }
