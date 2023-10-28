@@ -39,6 +39,8 @@ namespace MyProject0.DataAccess.Repository
             {
                 foreach (var i in IncludeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                 {
+                    // We are making a kind of Generic LINQ, whatsoever parameteres we are getting we are directly
+                    // adding it to the query by Include.
                     query = query.Include(i);
                 }
             }
@@ -50,7 +52,7 @@ namespace MyProject0.DataAccess.Repository
             IQueryable<T> values = dbSet;
             if (!string.IsNullOrEmpty(IncludeProperties))
             {
-                foreach(var i in IncludeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                foreach(var i in IncludeProperties.Split(',', StringSplitOptions.RemoveEmptyEntries))
                 {
                     values = values.Include(i);
                 }

@@ -1,50 +1,61 @@
 ﻿@model List<Product>
 
-    <div class="container">
-        <div class="row pt-5 pb-3">
-            <div class="col-6">
-                <h1>
+<div class="card shadow border-0 my-4">
+    <div class="card-header bg-secondary bg-gradient ml-0 py-1">
+        <div class="row text-center py-3">
+            <div class="col-12 align-middle">
+                <h2 class="text-white m-1">
                     Product List
-                </h1>
-            </div>
-            <div class="col-6 text-end">
-                <a asp-controller="Products" asp-action="Upsert" class="btn btn-primary">
-                    <i class="bi bi-plus-lg"></i> Add a new Product
-                </a>
+                </h2>
             </div>
         </div>
     </div>
-    <table class=" table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>ISBN</th>
-                <th>Price</th>
-                <th>Author</th>
-                <th>Catagory</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var obj in Model)
-            {
+    <div class="card-body p-4">
+        <div class="row text-end my-3">
+            <div class="col">
+                <a asp-controller="Products" asp-action="Upsert" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Create new Product
+                </a>
+            </div>
+        </div>
+        <table id="TableData" class="table table-bordered table-striped" style="width:100%">
+            <thead>
                 <tr>
-                    <td> @obj.Title </td>
-                    <td> @obj.ISBN </td>
-                    <td> @obj.Price</td>
-                    <td> @obj.Author </td>
-                    <td> @obj.Catagory.Name</td>
-                    <td>
-                        <a asp-controller="Products" asp-action="Upsert" asp-route-id="@obj.Id" class="btn btn-primary mx-2">
-                            <i class="bi bi-pencil-square"></i> Edit
-                        </a>
-                        <a asp-controller="Products" asp-action="Delete" asp-route-id="@obj.Id" class="btn btn-danger mx-2">
-                            <i class="bi bi-trash3-fill"></i> Delete
-                        </a>
-                    </td>
+                    <th>Name</th>
+                    <th>ISBN</th>
+                    <th>Price</th>
+                    <th>Author</th>
+                    <th>Catagory</th>
+                    <th></th>
                 </tr>
-            }
-
-        </tbody>
-
-    </table>
+            </thead>
+            @* We don't need foreach loop to display all of the Products
+            Now we are using DataTable to display all the products.
+            We don't need tbody, js will take care of it automatically
+            <tbody >
+                @foreach (var obj in Model)
+                {
+                    <tr>
+                        <td> @obj.Title </td>
+                        <td> @obj.ISBN </td>
+                        <td> @obj.Price</td>
+                        <td> @obj.Author </td>
+                        <td> @obj.Catagory.Name</td>
+                        <td>
+                            <a asp-controller="Products" asp-action="Upsert" asp-route-id="@obj.Id" class="btn btn-primary mx-2">
+                                <i class="bi bi-pencil-square"></i> Edit
+                            </a>
+                            <a asp-controller="Products" asp-action="Delete" asp-route-id="@obj.Id" class="btn btn-danger mx-2">
+                                <i class="bi bi-trash3-fill"></i> Delete
+                            </a>
+                        </td>
+                    </tr>
+                } 
+            </tbody>
+            *@
+        </table>
+    </div>
+</div>
+    @section Scripts{
+        <script src="~/js/Product.js"></script>
+    }

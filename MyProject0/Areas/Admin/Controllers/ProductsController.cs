@@ -22,6 +22,8 @@ namespace MyProject0.Areas.Admin.Controllers
         }
         public IActionResult Index()
         {
+            // The parameter that we are passing in the GetAll funciton should be Sensitive since we are directly adding it in the LINQ
+            // If it will not match with anything on the DB it will throw an error.
             List<Product> productsList = _UnitOfWork.Product.GetAll(IncludeProperties:"Catagory").ToList();
             return View(productsList);
         }
@@ -228,5 +230,13 @@ namespace MyProject0.Areas.Admin.Controllers
             return RedirectToAction("Index");
 
         }
+        #region API Calls
+        [HttpGet]
+        public IActionResult GetAll ()
+        {
+            List<Product> ProductsList = _UnitOfWork.Product.GetAll(IncludeProperties: "Catagory").ToList();
+            return Json(new { data = ProductsList });
+        }
+        #endregion
     }
 }
