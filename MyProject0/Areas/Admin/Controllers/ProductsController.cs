@@ -250,9 +250,12 @@ namespace MyProject0.Areas.Admin.Controllers
                 return Json(new { success = false, message = "Error while deleting" });
             }
             // Remember whenever we are deleting the product we also need to delete it's corrosponding image 
-            var OldImagePath = Path.Combine(_WebHostEnvironment.WebRootPath, ProductToDelete.ImageUrl.TrimStart('/'));
-
-            if (System.IO.File.Exists(OldImagePath))
+            dynamic OldImagePath = null;
+            if (ProductToDelete.ImageUrl != null)
+            {
+                OldImagePath = Path.Combine(_WebHostEnvironment.WebRootPath, ProductToDelete.ImageUrl.TrimStart('/'));
+            }
+            if (OldImagePath != null && System.IO.File.Exists(OldImagePath))
             {
                 System.IO.File.Delete(OldImagePath);
             }
