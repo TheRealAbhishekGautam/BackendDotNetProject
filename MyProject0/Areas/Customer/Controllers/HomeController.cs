@@ -29,7 +29,11 @@ public class HomeController : Controller
         // Moreover we can also return a specific view, for example
         //return View("privacy");
     }
-
+    public IActionResult Details(int ProductId)
+    {
+        Product product = _unitOfWork.Product.Get(x => x.Id == ProductId, IncludeProperties:"Catagory");
+        return View(product);
+    }
     public IActionResult Privacy()
     {
         return View();
