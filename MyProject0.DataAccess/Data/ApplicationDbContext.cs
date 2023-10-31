@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MyProject0.Models;
 
@@ -7,7 +8,7 @@ namespace MyProject0.DataAccess.Data
     // These are the basic syntaxes for using the entity framework core
     // 1) Inherit the DbContext class (This is like the root class) inside your own DbContext file.
     // 2) Adding the DbContextOptions inside the constructor and passing the same variable to the base class (DbContext here).
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext
 	{
 		public ApplicationDbContext(DbContextOptions <ApplicationDbContext> options) : base (options)
 		{
@@ -26,6 +27,9 @@ namespace MyProject0.DataAccess.Data
 
         protected override void OnModelCreating (ModelBuilder modelbuilder)
 		{
+            // We need to add this line for the sake of configuratin of the IdentityDbContext
+            base.OnModelCreating(modelbuilder);
+
 			modelbuilder.Entity<Catagory>().HasData(
 				new Catagory { ID = 1, Name = "SciFi",DisplayOrder=1},
                 new Catagory { ID = 2, Name = "Drama", DisplayOrder = 2 },
