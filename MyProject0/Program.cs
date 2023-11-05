@@ -1,4 +1,4 @@
-﻿// In the older versions (.Net 6 and below), there were two files program.cs and startup.cs but now
+// In the older versions (.Net 6 and below), there were two files program.cs and startup.cs but now
 // both of these files are combined into a single file i.e. Progran.cs
 // In this file we will have some service regestrations, pipelines and middlewares.
 // Always remember whenever we have to configure a pipeline Program.cs is the file.
@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using MyProject0.DataAccess.Data;
 using MyProject0.DataAccess.Repository;
 using MyProject0.DataAccess.Repository.IRepository;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,8 @@ builder.Services.AddControllersWithViews();
 // the option UseSqlServer and inside it we are passing the connection string that will be used for our connection.
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(
     builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
 
