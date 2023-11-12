@@ -21,7 +21,10 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(
     builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<ApplicationDbContext>();
+
+// Since all of the identity are in razor pages, we have to enable it to our project by regesting the razor pages into the pipeline
+builder.Services.AddRazorPages();
 
 builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
 
@@ -42,8 +45,11 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthorization();
+// Authentication will always be added before Authrization
+app.UseAuthentication();
 
+app.UseAuthorization();
+app.MapRazorPages();
 // Telling that on the startup, Home controller will be called
 app.MapControllerRoute(
     // Routing basically means that whenever the request come to the project where that request will be handelled.

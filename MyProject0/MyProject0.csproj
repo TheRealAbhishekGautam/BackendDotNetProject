@@ -40,7 +40,6 @@
   <ItemGroup>
     <Folder Include="Areas\Customer\Controllers\" />
     <Folder Include="Areas\Admin\Views\Catagory\" />
-    <Folder Include="Areas\Identity\Data\" />
     <Folder Include="wwwroot\images\products\" />
   </ItemGroup>
   <ItemGroup>
