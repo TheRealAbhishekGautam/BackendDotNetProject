@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace MyProject0.DataAccess.Repository.IRepository
 {
-    public interface IProductRepository : IRepository<Product> 
+    public interface ICompanyRepository : IRepository<Company>
     {
-        public void Update (Product obj);
+        void Update(Company company);
     }
 }
