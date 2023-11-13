@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyProject0.DataAccess.Data;
 using MyProject0.DataAccess.Repository.IRepository;
 using MyProject0.Models;
+using MyProject0.Utility;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -13,6 +15,7 @@ namespace MyProject0.Areas.Admin.Controllers
 {
     // Telling the controller that you bolongs to which area.
     [Area("Admin")]
+    [Authorize(Roles = SD.Role_Admin)]
     public class CatagoryController : Controller
     {
         // Here we are assining all the values from our ApplicationDbContext to a local variable.

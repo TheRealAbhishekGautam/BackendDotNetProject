@@ -29,6 +29,14 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 // Now we are customizing the default Role.
 builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
+// These routes will always be defined after regestring the Identity
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = $"/Identity/Account/Login";
+    options.LogoutPath = $"/Identity/Account/Logout";
+    options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
+});
+
 // Since all of the identity are in razor pages, we have to enable it to our project by regesting the razor pages into the pipeline
 builder.Services.AddRazorPages();
 
