@@ -10,18 +10,24 @@ using MyProject0.DataAccess.Data;
 using MyProject0.DataAccess.Repository;
 using MyProject0.DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using MyProject0.Utility;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IEmailSender, EmailSender>();
 
 // We are basically registring a service AddDbContext (telling the project that we are using ef core) and inside it we are passing
 // the option UseSqlServer and inside it we are passing the connection string that will be used for our connection.
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(
     builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<ApplicationDbContext>();
+// By default the user that will be used to add the values to the database is IdentityUser and it's default Identity Role will be used
+// builder.Services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<ApplicationDbContext>();
+// Now we are customizing the default Role.
+builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
 // Since all of the identity are in razor pages, we have to enable it to our project by regesting the razor pages into the pipeline
 builder.Services.AddRazorPages();
