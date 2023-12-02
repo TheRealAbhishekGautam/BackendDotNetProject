@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using MyProject0.DataAccess.Repository.IRepository;
 using MyProject0.Models;
 using MyProject0.Utility;
 using NuGet.Packaging.Signing;
@@ -36,6 +37,7 @@ namespace MyProject0.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly IUnitOfWork _UnitOfWork;
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
@@ -43,7 +45,8 @@ namespace MyProject0.Areas.Identity.Pages.Account
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager,
+            IUnitOfWork UnitOfWork)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -52,6 +55,7 @@ namespace MyProject0.Areas.Identity.Pages.Account
             _logger = logger;
             _emailSender = emailSender;
             _roleManager = roleManager;
+            _UnitOfWork = UnitOfWork;
         }
 
         /// <summary>
@@ -118,6 +122,9 @@ namespace MyProject0.Areas.Identity.Pages.Account
             public string? State { get; set; }
             public string? PostalCode { get; set; }
             public string? PhoneNumber { get; set; }
+            public int? CompanyId { get; set; }
+            [ValidateNever]
+            public IEnumerable<SelectListItem> CompanyList { get; set; }
         }
 
 
@@ -137,7 +144,12 @@ namespace MyProject0.Areas.Identity.Pages.Account
                            {
                                Text = x,
                                Value = x
-                           })
+                           }),
+                CompanyList = _UnitOfWork.Company.GetAll().Select(x => new SelectListItem
+                {
+                    Text = x.Name,
+                    Value = x.Id.ToString()
+                })
             };
 
             ReturnUrl = returnUrl;
@@ -161,6 +173,12 @@ namespace MyProject0.Areas.Identity.Pages.Account
                 user.City = Input.City;
                 user.State = Input.State;
                 user.StreetAddress = Input.StreetAddress;
+
+                if(Input.Role == SD.Role_Company)
+                {
+                    user.CompanyId = Input.CompanyId;
+                }
+
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
