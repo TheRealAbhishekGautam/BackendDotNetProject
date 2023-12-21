@@ -22,6 +22,7 @@ namespace MyProject0.DataAccess.Data
 
 		public DbSet <Catagory> Catagories { get; set; }
         public DbSet<Product> Product { get; set; }
+        public DbSet<ShoppingCart> ShoppingCarts { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<Company> Companies { get; set; }
 
