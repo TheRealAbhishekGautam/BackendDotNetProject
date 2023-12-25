@@ -31,9 +31,15 @@ namespace MyProject0.DataAccess.Repository
             dbSet.Add(entity);
         }
 
-        public T Get(Expression<Func<T, bool>> filter, string? IncludeProperties = null)
+        public T Get(Expression<Func<T, bool>> filter, string? IncludeProperties = null, bool track = false)
         {
-            IQueryable<T> query = dbSet;
+            IQueryable<T> query;
+
+            if (track)  
+                query = dbSet;
+            else        
+                query = dbSet.AsNoTracking();
+
             query = query.Where(filter);
             if (!string.IsNullOrEmpty(IncludeProperties))
             {
@@ -47,9 +53,11 @@ namespace MyProject0.DataAccess.Repository
             return query.FirstOrDefault();
         }
 
-        public IEnumerable<T> GetAll(string? IncludeProperties = null)
+        public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null, string? IncludeProperties = null)
         {
             IQueryable<T> values = dbSet;
+            if (filter != null)
+                values = values.Where(filter);
             if (!string.IsNullOrEmpty(IncludeProperties))
             {
                 foreach(var i in IncludeProperties.Split(',', StringSplitOptions.RemoveEmptyEntries))

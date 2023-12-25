@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyProject0.DataAccess.Repository;
 using MyProject0.DataAccess.Repository.IRepository;
@@ -31,8 +33,47 @@ public class HomeController : Controller
     }
     public IActionResult Details(int ProductId)
     {
-        Product product = _unitOfWork.Product.Get(x => x.Id == ProductId, IncludeProperties:"Catagory");
-        return View(product);
+        ShoppingCart ShoppingCart = new ShoppingCart()
+        {
+            Product = _unitOfWork.Product.Get(x => x.Id == ProductId, IncludeProperties: "Catagory"),
+            Count = 1,
+            ProductId = ProductId
+        };
+        return View(ShoppingCart);
+    }
+    // We are adding the authrize in order to get the details of the user
+    // If the user is not logged in, it will ask them to login first
+    [HttpPost]
+    [Authorize]
+    public IActionResult Details(ShoppingCart ShopCart)
+    {
+        // Now in order to get the details of the user we are using ClaimsIdentity
+
+        var claimsIdentity = (ClaimsIdentity)User.Identity;
+        var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+        ShopCart.ApplicationUserId = userId;
+
+        // Here we are checking if a cart with the same user and product is there inside the database or not.
+        // If it's there then edit the count of the product else add it.
+        ShoppingCart ShoppingCartFromDb = _unitOfWork.ShoppingCart.Get(x => x.ApplicationUserId == userId && x.ProductId == ShopCart.ProductId);
+
+        if( ShoppingCartFromDb != null )
+        {
+            // Edit Case
+            ShoppingCartFromDb.Count += ShopCart.Count;
+            _unitOfWork.ShoppingCart.Update(ShoppingCartFromDb);
+        }
+        else
+        {
+            // Add Case
+            _unitOfWork.ShoppingCart.Add(ShopCart);
+        }
+
+        TempData["Success"] = "Cart Updated Successfully";
+        _unitOfWork.Save();
+
+        return RedirectToAction("Index");
     }
     public IActionResult Privacy()
     {

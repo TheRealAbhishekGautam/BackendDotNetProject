@@ -25,5 +25,9 @@ namespace MyProject0.Models
         [ForeignKey("ApplicationUserId")]
         [ValidateNever]
         public ApplicationUser ApplicationUser { get; set; }
+        
+        // Not Mapped means don't map this field with the database.
+        [NotMapped]
+        public double Price { get; set; }
     }
 }

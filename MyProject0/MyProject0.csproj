@@ -38,7 +38,6 @@
     <None Remove="Areas\Customer\Views\Home\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Areas\Customer\Controllers\" />
     <Folder Include="Areas\Admin\Views\Catagory\" />
     <Folder Include="wwwroot\images\products\" />
   </ItemGroup>
