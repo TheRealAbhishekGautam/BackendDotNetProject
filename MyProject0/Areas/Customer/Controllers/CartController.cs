@@ -35,6 +35,43 @@ namespace MyProject0.Areas.Customer.Controllers
 
             return View(ShoppingCartVM);
         }
+
+        public IActionResult Summary()
+        {
+            return View();
+        }
+
+        public IActionResult Plus(int cartId)
+        {
+            ShoppingCart ShoppingCartFromDb = _unitOfWork.ShoppingCart.Get(x => x.Id == cartId);
+            ShoppingCartFromDb.Count += 1;
+            _unitOfWork.ShoppingCart.Update(ShoppingCartFromDb);
+            _unitOfWork.Save();
+            return RedirectToAction("Index");
+        }
+        public IActionResult Minus (int cartId)
+        {
+            ShoppingCart ShoppingCartFromDb = _unitOfWork.ShoppingCart.Get(x => x.Id == cartId);
+            if (ShoppingCartFromDb.Count == 1)
+            {
+                _unitOfWork.ShoppingCart.Remove(ShoppingCartFromDb);
+            }
+            else
+            {
+                ShoppingCartFromDb.Count -= 1;
+                _unitOfWork.ShoppingCart.Update(ShoppingCartFromDb);
+            }
+            _unitOfWork.Save();
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult Remove (int cartId)
+        {
+            ShoppingCart ShoppingCartFromDb = _unitOfWork.ShoppingCart.Get(x => x.Id == cartId);
+            _unitOfWork.ShoppingCart.Remove(ShoppingCartFromDb);
+            _unitOfWork.Save();
+            return RedirectToAction("Index");
+        }
         private double GetPriceBasedOnQuantity(ShoppingCart shoppingCart)
         {
             if(shoppingCart.Count <= 50)
