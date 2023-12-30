@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MyProject0.DataAccess.Repository.IRepository;
 using MyProject0.Models;
 using MyProject0.Models.ViewModels;
+using MyProject0.Utility;
 using System.Security.Claims;
 
 namespace MyProject0.Areas.Customer.Controllers
@@ -12,7 +13,8 @@ namespace MyProject0.Areas.Customer.Controllers
     public class CartController : Controller
     {
         internal readonly IUnitOfWork _unitOfWork;
-        internal ShoppingCartVM ShoppingCartVM { get; set; }
+        [BindProperty]
+        public ShoppingCartVM ShoppingCartVM { get; set; }
         public CartController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -67,7 +69,80 @@ namespace MyProject0.Areas.Customer.Controllers
             return View(ShoppingCartVM);
         }
 
-        public IActionResult Plus(int cartId)
+        [HttpPost]
+        [ActionName("Summary")]
+		public IActionResult SummaryPost()
+		{
+			var claimsIdentity = (ClaimsIdentity)User.Identity;
+			var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            ShoppingCartVM.ShoppingCartList = _unitOfWork.ShoppingCart.GetAll(x => x.ApplicationUserId == userId, "Product");
+            ShoppingCartVM.OrderHeader.OrderDate = DateTime.Now;
+            ShoppingCartVM.OrderHeader.ApplicationUserId = userId;
+
+			// Don't do like this
+			// ShoppingCartVM.OrderHeader.ApplicationUser = _unitOfWork.ApplicationUser.Get(x => x.Id == userId);
+            // When you will save the values inside the OrderHeader it will also Save the value of ApplicationUser again 
+            // And when it will try to save it, it will throw an exception saying that this UserId already exists.
+            // So never populate the navigational property of an entity from the db if it already exists.
+
+			ApplicationUser applicationUser = _unitOfWork.ApplicationUser.Get(x => x.Id == userId);
+
+			foreach (var cart in ShoppingCartVM.ShoppingCartList)
+			{
+				cart.Price = GetPriceBasedOnQuantity(cart);
+				ShoppingCartVM.OrderHeader.OrderTotal += (cart.Count * cart.Price);
+			}
+
+            // If for the current user threre's a Company Id associated inside the database, we directly needs to place the order 
+            // Rather then redirecting it to a payment gateway.
+            if(applicationUser.CompanyId.GetValueOrDefault() == 0)
+            {
+				// It's a regular customer account.
+				ShoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusPending;
+				ShoppingCartVM.OrderHeader.OrderStatus = SD.StatusPeding;
+            }
+            else
+            {
+				// Company User Account
+				ShoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusDelayedPayment;
+				ShoppingCartVM.OrderHeader.OrderStatus = SD.StatusApproved;
+			}
+
+            // Now Let's Save the Order Header
+            _unitOfWork.OrderHeader.Add(ShoppingCartVM.OrderHeader);
+            _unitOfWork.Save();
+
+            // Now Let's Save the Order Detail
+            // We have to save all the products to the db inside the OrderDetail table.
+            foreach(var cart in ShoppingCartVM.ShoppingCartList)
+            {
+                OrderDetail orderDetail = new()
+                {
+                    ProductId = cart.ProductId,
+                    OrderHeaderId = ShoppingCartVM.OrderHeader.Id,
+                    Count = cart.Count,
+                    Price = cart.Price
+                };
+                _unitOfWork.OrderDetail.Add(orderDetail);
+                _unitOfWork.Save();
+            }
+
+            // We are capturing the payment of a regular customer account order.
+			if (applicationUser.CompanyId.GetValueOrDefault() == 0)
+			{
+				// Stripe Logic
+			}
+
+			return RedirectToAction(nameof(OrderConfirmation), new {id = ShoppingCartVM.OrderHeader.Id});
+		}
+
+        public IActionResult OrderConfirmation(int id)
+        {
+            return View(id);
+        }
+
+		public IActionResult Plus(int cartId)
         {
             ShoppingCart ShoppingCartFromDb = _unitOfWork.ShoppingCart.Get(x => x.Id == cartId);
             ShoppingCartFromDb.Count += 1;

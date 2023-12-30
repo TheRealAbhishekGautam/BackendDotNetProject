@@ -16,6 +16,19 @@ namespace MyProject0.Utility
 
         // Employee will have the access to modify the shipment details and order details.
         public const string Role_Employee = "Employee";
+
+        // These all are the combinations that we can have for Tracking the order for a Regular Customer and a Corporate Customer.
+		public const string StatusPeding = "Pending";
+		public const string StatusApproved = "Approved";
+        public const string StatusInProcess = "Processing";
+        public const string StatusShipped = "Shipped";
+        public const string StatusCancelled = "Cancelled";
+        public const string StatusRefunded = "Refunded";
+
+        public const string PaymentStatusPending = "Pending";
+        public const string PaymentStatusApproved = "Approved";
+        public const string PaymentStatusDelayedPayment = "ApprovedForDelayedPayment";
+        public const string PaymentStatusRejected = "Rejected";
     }
 }
 
