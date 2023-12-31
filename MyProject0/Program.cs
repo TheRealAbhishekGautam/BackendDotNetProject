@@ -12,6 +12,7 @@ using MyProject0.DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using MyProject0.Utility;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +40,10 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 // Since all of the identity are in razor pages, we have to enable it to our project by regesting the razor pages into the pipeline
 builder.Services.AddRazorPages();
+
+// We are saying that all the variables inside the "Stripe" section of appsettings file will be mapped with the variables of the class StripeSettings
+// Make sure the name of the variables are exactly the same in both the places.
+builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
 
 builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
 
@@ -70,6 +75,9 @@ app.MapControllerRoute(
     // Here if no controller is defined, Home controller will be called and if no action is defined then Index action will be called by-default.
     name: "default",
     pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}");
+
+// We have to pass that secret key to configure the Stripe inside our project.
+StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey").Get<string>();
 
 // Basically for runnning the project.
 app.Run();
