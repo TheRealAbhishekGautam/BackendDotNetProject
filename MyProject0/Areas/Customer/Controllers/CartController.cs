@@ -226,9 +226,10 @@ namespace MyProject0.Areas.Customer.Controllers
         }
         public IActionResult Minus (int cartId)
         {
-            ShoppingCart ShoppingCartFromDb = _unitOfWork.ShoppingCart.Get(x => x.Id == cartId);
+            ShoppingCart ShoppingCartFromDb = _unitOfWork.ShoppingCart.Get(x => x.Id == cartId, track:true);
             if (ShoppingCartFromDb.Count == 1)
             {
+                HttpContext.Session.SetInt32(SD.SessionCart, _unitOfWork.ShoppingCart.GetAll(x => x.ApplicationUserId == ShoppingCartFromDb.ApplicationUserId).Count()-1);
                 _unitOfWork.ShoppingCart.Remove(ShoppingCartFromDb);
             }
             else
@@ -242,7 +243,8 @@ namespace MyProject0.Areas.Customer.Controllers
 
         public IActionResult Remove (int cartId)
         {
-            ShoppingCart ShoppingCartFromDb = _unitOfWork.ShoppingCart.Get(x => x.Id == cartId);
+            ShoppingCart ShoppingCartFromDb = _unitOfWork.ShoppingCart.Get(x => x.Id == cartId, track:true);
+            HttpContext.Session.SetInt32(SD.SessionCart, _unitOfWork.ShoppingCart.GetAll(x => x.ApplicationUserId == ShoppingCartFromDb.ApplicationUserId).Count() - 1);
             _unitOfWork.ShoppingCart.Remove(ShoppingCartFromDb);
             _unitOfWork.Save();
             return RedirectToAction("Index");

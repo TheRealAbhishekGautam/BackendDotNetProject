@@ -38,6 +38,15 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
 });
 
+// To display number of items inside the cart we are using Sessions
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(100);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 // Since all of the identity are in razor pages, we have to enable it to our project by regesting the razor pages into the pipeline
 builder.Services.AddRazorPages();
 
@@ -68,6 +77,9 @@ app.UseRouting();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseSession();
+
 app.MapRazorPages();
 // Telling that on the startup, Home controller will be called
 app.MapControllerRoute(

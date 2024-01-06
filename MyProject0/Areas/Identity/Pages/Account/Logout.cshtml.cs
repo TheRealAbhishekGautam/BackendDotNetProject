@@ -26,6 +26,10 @@ namespace MyProject0.Areas.Identity.Pages.Account
         public async Task<IActionResult> OnPost(string returnUrl = null)
         {
             await _signInManager.SignOutAsync();
+
+            // When we are logging out, we need to clear our session
+            HttpContext.Session.Clear();
+
             _logger.LogInformation("User logged out.");
             if (returnUrl != null)
             {

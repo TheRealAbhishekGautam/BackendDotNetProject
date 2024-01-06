@@ -1,4 +1,5 @@
 ﻿@*  Underscore in the name of the view denotes that the view will be used througout the project  *@
+@inject IHttpContextAccessor HttpContextAccessor;
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -56,9 +57,22 @@
                                 </ul>
                             </li>
                         }
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="Customer" asp-controller="Cart" asp-action="Index"><i class="bi bi-bag-plus"></i></a>
-                        </li>
+                        @if (HttpContextAccessor.HttpContext.Session.GetInt32(SD.SessionCart) != null)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="Customer" asp-controller="Cart" asp-action="Index">
+                                    <i class="bi bi-bag-plus"></i> (@HttpContextAccessor.HttpContext.Session.GetInt32(SD.SessionCart))
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="Customer" asp-controller="Cart" asp-action="Index">
+                                    <i class="bi bi-bag-plus"></i> (0)
+                                </a>
+                            </li>
+                        }
                     </ul>
                     <partial name="_LoginPartial"/>
                 </div>

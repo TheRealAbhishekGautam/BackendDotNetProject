@@ -29,6 +29,9 @@ namespace MyProject0.Utility
         public const string PaymentStatusApproved = "Approved";
         public const string PaymentStatusDelayedPayment = "ApprovedForDelayedPayment";
         public const string PaymentStatusRejected = "Rejected";
+
+        // Adding the key of the variable which will store the count of number of items inside the cart using sessions
+        public const string SessionCart = "SessionShoppingCart";
     }
 }
 

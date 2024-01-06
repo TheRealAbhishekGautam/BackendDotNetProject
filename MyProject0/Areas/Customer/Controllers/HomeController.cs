@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using MyProject0.DataAccess.Repository;
 using MyProject0.DataAccess.Repository.IRepository;
 using MyProject0.Models;
+using MyProject0.Utility;
 
 namespace MyProject0.Areas.Customers.Controllers;
 
@@ -23,6 +24,19 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
+        var claimsIdentity = (ClaimsIdentity)User.Identity;
+        if (claimsIdentity.Claims != null && claimsIdentity.Claims.Count() != 0)
+        {
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            // If userId is null that means the user is not logged in
+            // If not we need to retrive the cart count and display it
+            if (userId != null)
+            {
+                HttpContext.Session.SetInt32(SD.SessionCart, _unitOfWork.ShoppingCart.GetAll(x => x.ApplicationUserId == userId).Count());
+            }
+        }
+        
         IEnumerable<Product> ProductList = _unitOfWork.Product.GetAll(IncludeProperties: "Catagory");
         // We have not mentioned what view from which locaion, then how the corrosponding view is getting returned.?
         // It will go inside the view folder and search for the folder named with the same name as the controller and then
@@ -63,15 +77,17 @@ public class HomeController : Controller
             // Edit Case
             ShoppingCartFromDb.Count += ShopCart.Count;
             _unitOfWork.ShoppingCart.Update(ShoppingCartFromDb);
+            _unitOfWork.Save();
         }
         else
         {
             // Add Case
             _unitOfWork.ShoppingCart.Add(ShopCart);
+            _unitOfWork.Save();
+            HttpContext.Session.SetInt32(SD.SessionCart, _unitOfWork.ShoppingCart.GetAll(x => x.ApplicationUserId == userId).Count());
         }
 
         TempData["Success"] = "Cart Updated Successfully";
-        _unitOfWork.Save();
 
         return RedirectToAction("Index");
     }
