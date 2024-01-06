@@ -23,20 +23,7 @@ public class HomeController : Controller
     }
 
     public IActionResult Index()
-    {
-        var claimsIdentity = (ClaimsIdentity)User.Identity;
-        if (claimsIdentity.Claims != null && claimsIdentity.Claims.Count() != 0)
-        {
-            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
-
-            // If userId is null that means the user is not logged in
-            // If not we need to retrive the cart count and display it
-            if (userId != null)
-            {
-                HttpContext.Session.SetInt32(SD.SessionCart, _unitOfWork.ShoppingCart.GetAll(x => x.ApplicationUserId == userId).Count());
-            }
-        }
-        
+    {        
         IEnumerable<Product> ProductList = _unitOfWork.Product.GetAll(IncludeProperties: "Catagory");
         // We have not mentioned what view from which locaion, then how the corrosponding view is getting returned.?
         // It will go inside the view folder and search for the folder named with the same name as the controller and then

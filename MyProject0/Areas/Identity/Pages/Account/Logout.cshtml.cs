@@ -28,7 +28,7 @@ namespace MyProject0.Areas.Identity.Pages.Account
             await _signInManager.SignOutAsync();
 
             // When we are logging out, we need to clear our session
-            HttpContext.Session.Clear();
+            // HttpContext.Session.Clear();
 
             _logger.LogInformation("User logged out.");
             if (returnUrl != null)
