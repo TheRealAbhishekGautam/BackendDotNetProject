@@ -213,6 +213,9 @@ namespace MyProject0.Areas.Customer.Controllers
             _unitOfWork.ShoppingCart.RemoveRange(shoppingCart);
             _unitOfWork.Save();
 
+            // Ending the session after order confirmation
+            HttpContext.Session.Clear();
+
             return View(id);
         }
 

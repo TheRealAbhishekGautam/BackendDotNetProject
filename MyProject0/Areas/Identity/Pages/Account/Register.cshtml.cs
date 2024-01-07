@@ -211,7 +211,16 @@ namespace MyProject0.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        // If the user is admin and creating a new account
+                        // Then don't log out him and login wiht the new account created (By-default functionality).
+                        if (User.IsInRole(SD.Role_Admin))
+                        {
+                            TempData["Success"] = "New User Created Successfully";
+                        }
+                        else
+                        {
+                            await _signInManager.SignInAsync(user, isPersistent: false);
+                        }
                         return LocalRedirect(returnUrl);
                     }
                 }
