@@ -38,6 +38,14 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
 });
 
+// Facebook Authentication
+builder.Services.AddAuthentication().AddFacebook(options =>
+{
+    // Get these keys from your facebook app basic settings
+    options.AppId = "2133467423682859";
+    options.AppSecret = "be665d7e6738e76f9d4feabbf5421447";
+});
+
 // To display number of items inside the cart we are using Sessions
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
