@@ -13,12 +13,15 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using MyProject0.Utility;
 using Stripe;
+using MyProject0.DataAccess.DbInitializers.IDbInitializer;
+using MyProject0.DataAccess.DbInitializer;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
+builder.Services.AddScoped<IDbInitializer, DbInitializer>();
 
 // We are basically registring a service AddDbContext (telling the project that we are using ef core) and inside it we are passing
 // the option UseSqlServer and inside it we are passing the connection string that will be used for our connection.
@@ -88,6 +91,12 @@ app.UseAuthorization();
 
 app.UseSession();
 
+// This function will be called everytime whenever we will run our application.
+// However insde the code we have said that if the roles are created then don't do anything.
+// Do all the initialization just for the first time.
+// And Automatically apply all the migrations everytime the application runs.
+SeedDatabase();
+
 app.MapRazorPages();
 // Telling that on the startup, Home controller will be called
 app.MapControllerRoute(
@@ -102,3 +111,12 @@ StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey"
 // Basically for runnning the project.
 app.Run();
 
+// Now we have to call our Initialize function to do all the necessary seedings.
+void SeedDatabase()
+{
+    using(var scope = app.Services.CreateScope())
+    {
+        var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
+        dbInitializer.Initialize();
+    }
+}
