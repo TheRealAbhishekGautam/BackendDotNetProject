@@ -48,7 +48,12 @@ namespace MyProject0.Areas.Admin.Controllers
             orderVM.OrderDetail = _unitOfWork.OrderDetail.GetAll(x => x.OrderHeaderId == orderVM.OrderHeader.Id, "Product").ToList();
 
             // All the stripe logic again
-            var baseUrl = "https://localhost:44381/";
+
+            // We can't give base url as localhost staticly since on the production this url will be different
+            // var baseUrl = "https://localhost:44381/";
+
+            // So we are making it dynamicly to pick the url on which the site is running currently.
+            var baseUrl = Request.Scheme + "://" + Request.Host.Value + "/";
             var options = new Stripe.Checkout.SessionCreateOptions
             {
                 SuccessUrl = baseUrl + $"Admin/Order/PaymentConfirmation?OrderHeaderId={orderVM.OrderHeader.Id}",

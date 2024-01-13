@@ -137,7 +137,12 @@ namespace MyProject0.Areas.Customer.Controllers
                 // To create a session 
                 // All of this code is according to the stripe documentation.
 				StripeConfiguration.ApiKey = "sk_test_51OSztTSENbH4Zz5foEptEWuS325DAyGE7HexyWzW829nGWTG7okFRQ527HVGPerjXJhltpZEuSYT6gX4dSM4jvSA00zXbUqXmP";
-                var baseUrl = "https://localhost:44381/";
+
+                // We can't give base url as localhost staticly since on the production this url will be different
+                // var baseUrl = "https://localhost:44381/";
+
+                // So we are making it dynamicly to pick the url on which the site is running currently.
+                var baseUrl = Request.Scheme + "://" + Request.Host.Value + "/";
                 var options = new Stripe.Checkout.SessionCreateOptions
                 {
                     SuccessUrl = baseUrl + $"Customer/Cart/OrderConfirmation?id={ShoppingCartVM.OrderHeader.Id}",
