@@ -25,6 +25,9 @@ namespace MyProject0.Models
         // Regular User or a Company User.
         [ValidateNever]
         [ForeignKey("CompanyId")]
-        public Company Company { get; set; }
+        public Company? Company { get; set; }
+
+        [NotMapped]
+        public string Role { get; set; }
     }
 }
