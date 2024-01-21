@@ -23,7 +23,7 @@ function LoadDataTable(){
                                     <a onclick = LockUnlock('${data.id}') class="btn btn-success text-white" style="cursor:pointer; width:120px;">
                                         <i class="bi bi-unlock-fill"></i> Unlock
                                     </a>
-                                    <a class="btn btn-danger text-white" style="cursor:pointer; width:120px;">
+                                    <a href="/admin/user/rolemanagement?userid=${data.id}" class="btn btn-danger text-white" style="cursor:pointer; width:120px;">
                                         Permission
                                     </a>
                                 </div>`
@@ -33,7 +33,7 @@ function LoadDataTable(){
                                     <a onclick = LockUnlock('${data.id}') class="btn btn-danger text-white" style="cursor:pointer; width:120px;">
                                         <i class="bi bi-lock-fill"></i> Lock
                                     </a>
-                                    <a class="btn btn-danger text-white" style="cursor:pointer; width:120px;">
+                                    <a href="/admin/user/rolemanagement?userid=${data.id}" class="btn btn-danger text-white" style="cursor:pointer; width:120px;">
                                         Permission
                                     </a>
                                 </div>`

@@ -1,0 +1,76 @@
+﻿@model RoleManagementVM
+
+<div class="card shadow border-0 my-4">
+    <div class="card-header bg-secondary bg-gradient ml-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1 class="text-white py-2">Manage User Role</h1>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-4">
+        <form method="post" class="row">
+            <input asp-for="MyUser.Id" hidden />
+            <div class="row">
+                <div class="col-12">
+                    <div class="border p-3">
+                        <div asp-validation-summary="ModelOnly"></div>
+                        <div class="form-floating py-2 col-12">
+                            <input asp-for="@Model.MyUser.Name" class="form-control border-0 shadow" disabled/>
+                            <label asp-for="@Model.MyUser.Name" class="ms-2"></label>
+                            <span asp-validation-for="@Model.MyUser.Name" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating mb-3 col-md-6">
+                            <select asp-for="@Model.MyUser.Role" asp-items="@Model.RoleList" class="form-select" style="padding-top: 0.625rem;"></select>
+                        </div>
+                        @if(Model.MyUser.CompanyId != null)
+                        {
+                            <div class="form-floating mb-3 col-md-6">
+                                <select asp-for="@Model.MyUser.CompanyId" asp-items="@Model.CompanyList" class="form-select" id="CurrentUserCompany" style="padding-top: 0.625rem;"></select>
+                            </div>
+                        }
+                        <div class="form-floating mb-3 col-md-6">
+                            <select asp-for="@Model.MyUser.CompanyId" asp-items="@Model.CompanyList" class="form-select" id="SelectUserCompany" style="padding-top: 0.625rem; display:none;">
+                                <option selected disabled>-- Select Company --</option>
+                            </select>
+                        </div>
+                        
+                        <div class="row pt-2">
+                            <div class="col-6 col-md-3">
+                                <button type="submit" class="btn btn-primary form-control">Update</button>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <a asp-area="Admin" asp-controller="User" asp-action="Index" class="btn btn-outline-primary border form-control">Back to list</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            $('#MyUser_Role').change(function () {
+                var selection = $('#MyUser_Role Option:Selected').text();
+                if (selection == '@SD.Role_Company') {
+                    if ('@Html.Raw(Model.MyUser.CompanyId)' != '') {
+                        $('#CurrentUserCompany').show();
+                        $('#SelectUserCompany').hide();
+                    }
+                    else {
+                        $('#SelectUserCompany').show();
+                        $('#CurrentUserCompany').hide();
+                    }
+                }
+                else {
+                    $('#CurrentUserCompany').hide();
+                    $('#SelectUserCompany').hide();
+                }
+            })
+        })
+    </script>
+}

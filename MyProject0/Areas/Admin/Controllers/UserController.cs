@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -22,14 +23,92 @@ namespace MyProject0.Areas.Admin.Controllers
         // To access Identity tables from the DB just use the table name without AspNet
         // Example on the DB we have a table named :- AspNetUsers
         // If I want to access it on the code side I will access it using :- dbContext.Users.ToList();
-        internal readonly ApplicationDbContext _db;
-        public UserController(ApplicationDbContext db)
+        private readonly ApplicationDbContext _db;
+        private readonly UserManager<IdentityUser> _userManager;
+        public UserController(ApplicationDbContext db, UserManager<IdentityUser> userManager)
         {
             _db = db;
+            _userManager = userManager;
         }
         public IActionResult Index()
         {
             return View();
+        }
+
+        [HttpGet]
+        public IActionResult RoleManagement (string UserId)
+        {
+            ApplicationUser UserFromDb = _db.ApplicationUsers.Where(x => x.Id == UserId).Include("Company").FirstOrDefault();
+
+            var RoleListFromDb = _db.Roles.ToList();
+            var CompanyListFromDb = _db.Companies.ToList();
+
+            var CurrentRoleId = _db.UserRoles.FirstOrDefault(x => x.UserId == UserFromDb.Id).RoleId;
+            var CurrentRole = RoleListFromDb.FirstOrDefault(x => x.Id == CurrentRoleId).Name;
+
+            RoleManagementVM roleManagementVM = new()
+            {
+                MyUser = UserFromDb,
+                RoleList = RoleListFromDb.Select(x => new SelectListItem()
+                {
+                    Text = x.Name,
+                    Value = x.Name
+                }),
+                CompanyList = CompanyListFromDb.Select(x => new SelectListItem()
+                {
+                    Text = x.Name,
+                    Value = x.Id.ToString()
+                })
+            };
+
+            roleManagementVM.MyUser.Role = CurrentRole;
+
+            return View(roleManagementVM);
+        }
+
+        [HttpPost]
+        [ActionName("RoleManagement")]
+        public IActionResult UpdateUser(RoleManagementVM roleManagementVM)
+        {
+            ApplicationUser OldUserFromDb = _db.ApplicationUsers.Where(x => x.Id == roleManagementVM.MyUser.Id).Include("Company").FirstOrDefault();
+
+            var OldRoleId = _db.UserRoles.FirstOrDefault(x => x.UserId == OldUserFromDb.Id).RoleId;
+            var OldRole = _db.Roles.FirstOrDefault(x => x.Id == OldRoleId).Name;
+
+            // If old and new role is Company User but the company is changed
+
+            if(roleManagementVM.MyUser.Role == SD.Role_Company 
+                && OldRole == SD.Role_Company 
+                && OldUserFromDb.CompanyId != roleManagementVM.MyUser.CompanyId)
+            {
+                OldUserFromDb.CompanyId = roleManagementVM.MyUser.CompanyId;
+            }
+
+            // If role is changed, update the role
+
+            if(OldRole != roleManagementVM.MyUser.Role)
+            {
+                _userManager.RemoveFromRoleAsync(OldUserFromDb, OldRole).GetAwaiter().GetResult();
+                _userManager.AddToRoleAsync(OldUserFromDb, roleManagementVM.MyUser.Role).GetAwaiter().GetResult();
+
+                // If new role is not compnay, Company Id should be null
+
+                if (roleManagementVM.MyUser.Role != SD.Role_Company)
+                {
+                    OldUserFromDb.CompanyId = null;
+                }
+
+                // If new role is compnay, Update the Company Id
+
+                if (roleManagementVM.MyUser.Role == SD.Role_Company)
+                {
+                    OldUserFromDb.CompanyId = roleManagementVM.MyUser.CompanyId;
+                }
+            }
+
+            _db.SaveChanges();
+            TempData["Success"] = "User Updated Successfully";
+            return RedirectToAction(nameof(Index));
         }
 
         #region API Calls
