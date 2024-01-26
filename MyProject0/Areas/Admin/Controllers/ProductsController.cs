@@ -79,6 +79,7 @@ namespace MyProject0.Areas.Admin.Controllers
                     string ProductPath = Path.Combine(wwwRootPath, @"images/products");
 
                     // If we are updating a Product's image then we also need to delete the old image corrosponding to that product
+                    /*
                     if(!string.IsNullOrEmpty(obj.Product.ImageUrl))
                     {
                         var OldImagePath = Path.Combine(wwwRootPath,obj.Product.ImageUrl.TrimStart('/'));
@@ -96,6 +97,7 @@ namespace MyProject0.Areas.Admin.Controllers
                         file.CopyTo(FileStream);
                     }
                     obj.Product.ImageUrl = @"/images/products/" + FileName;
+                    */
                 }
                 
                 // Creating Case
@@ -253,6 +255,7 @@ namespace MyProject0.Areas.Admin.Controllers
                 return Json(new { success = false, message = "Error while deleting" });
             }
             // Remember whenever we are deleting the product we also need to delete it's corrosponding image 
+            /*
             dynamic OldImagePath = null;
             if (ProductToDelete.ImageUrl != null)
             {
@@ -262,6 +265,7 @@ namespace MyProject0.Areas.Admin.Controllers
             {
                 System.IO.File.Delete(OldImagePath);
             }
+            */
             _UnitOfWork.Product.Remove(ProductToDelete); 
             _UnitOfWork.Save();
             return Json(new { success = true, message = "Deleted Successful" });

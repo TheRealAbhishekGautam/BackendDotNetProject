@@ -46,9 +46,6 @@ namespace MyProject0.Models
         [ValidateNever]
         public Catagory Catagory { get; set; }
 
-        [ValidateNever]
-        public string? ImageUrl { get; set; }
-
     }
 }
 
