@@ -532,6 +532,28 @@ namespace MyProject0.DataAccess.Migrations
                         });
                 });
 
+            modelBuilder.Entity("MyProject0.Models.ProductImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductImages");
+                });
+
             modelBuilder.Entity("MyProject0.Models.ShoppingCart", b =>
                 {
                     b.Property<int>("Id")
@@ -679,6 +701,17 @@ namespace MyProject0.DataAccess.Migrations
                     b.Navigation("Catagory");
                 });
 
+            modelBuilder.Entity("MyProject0.Models.ProductImage", b =>
+                {
+                    b.HasOne("MyProject0.Models.Product", "Product")
+                        .WithMany("ProductImages")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("MyProject0.Models.ShoppingCart", b =>
                 {
                     b.HasOne("MyProject0.Models.ApplicationUser", "ApplicationUser")
@@ -705,6 +738,11 @@ namespace MyProject0.DataAccess.Migrations
                         .HasForeignKey("CompanyId");
 
                     b.Navigation("Company");
+                });
+
+            modelBuilder.Entity("MyProject0.Models.Product", b =>
+                {
+                    b.Navigation("ProductImages");
                 });
 #pragma warning restore 612, 618
         }

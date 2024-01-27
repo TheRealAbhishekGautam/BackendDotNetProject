@@ -34,6 +34,7 @@ namespace MyProject0.DataAccess.Repository
                 ProductFromDb.Description = obj.Description;
                 ProductFromDb.CatagoryId = obj.CatagoryId;
                 ProductFromDb.Author = obj.Author;
+                ProductFromDb.ProductImages = obj.ProductImages;
 
                 //if(ProductFromDb.ImageUrl != null) {
                 //    ProductFromDb.ImageUrl = obj.ImageUrl;

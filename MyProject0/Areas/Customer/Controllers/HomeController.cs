@@ -24,7 +24,7 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {        
-        IEnumerable<Product> ProductList = _unitOfWork.Product.GetAll(IncludeProperties: "Catagory");
+        IEnumerable<Product> ProductList = _unitOfWork.Product.GetAll(IncludeProperties: "Catagory,ProductImages");
         // We have not mentioned what view from which locaion, then how the corrosponding view is getting returned.?
         // It will go inside the view folder and search for the folder named with the same name as the controller and then
         // Search for the view with the same name as the ActionResult method name (Index in our case). 
@@ -36,7 +36,7 @@ public class HomeController : Controller
     {
         ShoppingCart ShoppingCart = new ShoppingCart()
         {
-            Product = _unitOfWork.Product.Get(x => x.Id == ProductId, IncludeProperties: "Catagory"),
+            Product = _unitOfWork.Product.Get(x => x.Id == ProductId, IncludeProperties: "Catagory,ProductImages"),
             Count = 1,
             ProductId = ProductId
         };

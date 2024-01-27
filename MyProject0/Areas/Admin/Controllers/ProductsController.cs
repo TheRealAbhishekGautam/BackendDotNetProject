@@ -56,52 +56,18 @@ namespace MyProject0.Areas.Admin.Controllers
             }
             else
             {
-                obj.Product = _UnitOfWork.Product.Get(x => x.Id == id); 
+                obj.Product = _UnitOfWork.Product.Get(x => x.Id == id, "ProductImages"); 
                 return View(obj);
             }
 
         }
         [HttpPost]
-        public IActionResult Upsert (ProductsVM obj, IFormFile? file)
+        public IActionResult Upsert (ProductsVM obj, List<IFormFile>? files)
         {
             if (ModelState.IsValid)
             {
-                // WebRootPath will give us the path of the wwwroot folder.
-                string wwwRootPath = _WebHostEnvironment.WebRootPath;
-                if (file != null)
-                {
-                    // Since the file that was uploaded by the user can be of any name and the user can add multiple images with the same name for multiple products
-                    // So, We are changing it by a new guid + the actual extention given by the file from the user.
-                    string FileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-
-                    // We are combining the path of the actual wwwroot folder with the path at which we are adding the images of products.
-                    // Now the ProductPath is the actual path at which we are supposed to add the images of Products.
-                    string ProductPath = Path.Combine(wwwRootPath, @"images/products");
-
-                    // If we are updating a Product's image then we also need to delete the old image corrosponding to that product
-                    /*
-                    if(!string.IsNullOrEmpty(obj.Product.ImageUrl))
-                    {
-                        var OldImagePath = Path.Combine(wwwRootPath,obj.Product.ImageUrl.TrimStart('/'));
-
-                        if(System.IO.File.Exists(OldImagePath))
-                        {
-                            System.IO.File.Delete(OldImagePath);
-                        }
-                    }
-
-                    // Now we have the new name of the file and the location where we are suposed to save/add the file
-                    // Let's add it
-                    using (var FileStream = new FileStream (Path.Combine(ProductPath,FileName),FileMode.Create))
-                    {
-                        file.CopyTo(FileStream);
-                    }
-                    obj.Product.ImageUrl = @"/images/products/" + FileName;
-                    */
-                }
-                
                 // Creating Case
-                if(obj.Product.Id == 0)
+                if (obj.Product.Id == 0)
                 {
                     _UnitOfWork.Product.Add(obj.Product);
                 }
@@ -110,9 +76,55 @@ namespace MyProject0.Areas.Admin.Controllers
                 {
                     _UnitOfWork.Product.Update(obj.Product);
                 }
-                
+
+                // First we are creating the product then we will add the images corrosponding to that Product 
+                // inside the folder that will be named after the Product Id which will be generated after we post a product.
                 _UnitOfWork.Save();
-                TempData["Success"] = "The Product has been added successfully";
+
+                // WebRootPath will give us the path of the wwwroot folder.
+                string wwwRootPath = _WebHostEnvironment.WebRootPath;
+
+                if (files != null)
+                {
+                    foreach(var file in files)
+                    {
+                        string FileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                        string ProductImagesPath = @"images\productimagefolders\product-" + obj.Product.Id;
+                        string ProductImagesFinalPath = Path.Combine(wwwRootPath, ProductImagesPath);
+
+                        // If the directory is not created yet then we are first creating it
+                        if (!Directory.Exists(ProductImagesFinalPath))
+                        {
+                            Directory.CreateDirectory(ProductImagesFinalPath);
+                        }
+
+                        using (var FileStream = new FileStream(Path.Combine(ProductImagesFinalPath, FileName), FileMode.Create))
+                        {
+                            file.CopyTo(FileStream);
+                        }
+
+                        ProductImage productImage = new()
+                        {
+                            ProductId = obj.Product.Id,
+                            ImageUrl = @"/" + ProductImagesPath + @"/" + FileName
+                        };
+
+                        // Instanciating the ProductImges so that we can add images into it.
+                        if(obj.Product.ProductImages == null)
+                        {
+                            obj.Product.ProductImages = new List<ProductImage>();
+                        }
+
+                        obj.Product.ProductImages.Add(productImage);
+
+                    }
+
+                    _UnitOfWork.Product.Update(obj.Product);
+                    _UnitOfWork.Save();
+
+                }
+                
+                TempData["Success"] = "The Product has been added/updated successfully";
                 return RedirectToAction("Index");
             }
             else
@@ -126,6 +138,34 @@ namespace MyProject0.Areas.Admin.Controllers
                 return View(obj);
             }
         }
+
+        public IActionResult DeleteImage (int imageId)
+        {
+            var ImageToBeDeleted = _UnitOfWork.ProductImage.Get(x => x.Id == imageId);
+            var ProductId = ImageToBeDeleted.ProductId;
+
+            if (ImageToBeDeleted != null)
+            {
+                if(!String.IsNullOrEmpty(ImageToBeDeleted.ImageUrl))
+                {
+                    var OldImagePath = Path.Combine(_WebHostEnvironment.WebRootPath, ImageToBeDeleted.ImageUrl.TrimStart('/'));
+
+                    if (OldImagePath != null && System.IO.File.Exists(OldImagePath))
+                    {
+                        System.IO.File.Delete(OldImagePath);
+                    }
+                }
+
+                _UnitOfWork.ProductImage.Remove(ImageToBeDeleted); 
+                _UnitOfWork.Save();
+
+                TempData["Success"] = "Image Deleted Successfully";
+            }
+
+            return RedirectToAction(nameof(Upsert), new {id = ProductId });
+
+        }
+
         // We have combined both of the funcitonality in the same Upsert API's so we don't need these anymore.
         /*
         public IActionResult Create()
@@ -202,7 +242,7 @@ namespace MyProject0.Areas.Admin.Controllers
 
         }
         */
-        
+
         /*
         public IActionResult Delete(int? id)
         {
@@ -254,18 +294,27 @@ namespace MyProject0.Areas.Admin.Controllers
             {
                 return Json(new { success = false, message = "Error while deleting" });
             }
+
             // Remember whenever we are deleting the product we also need to delete it's corrosponding image 
-            /*
-            dynamic OldImagePath = null;
-            if (ProductToDelete.ImageUrl != null)
+
+            string ProductImagesPath = @"images\productimagefolders\product-" + id;
+            string ProductImagesFinalPath = Path.Combine(_WebHostEnvironment.WebRootPath, ProductImagesPath);
+
+            if (Directory.Exists(ProductImagesFinalPath))
             {
-                OldImagePath = Path.Combine(_WebHostEnvironment.WebRootPath, ProductToDelete.ImageUrl.TrimStart('/'));
+                // Fetching all the image names inside the directory
+                string[] InsideFilePaths = Directory.GetFiles(ProductImagesFinalPath);
+
+                // Deleting all the images indivisually
+                foreach (string File in InsideFilePaths)
+                {
+                    System.IO.File.Delete(File);
+                }
+
+                // Finally deleting the empty directory
+                Directory.Delete(ProductImagesFinalPath);
             }
-            if (OldImagePath != null && System.IO.File.Exists(OldImagePath))
-            {
-                System.IO.File.Delete(OldImagePath);
-            }
-            */
+
             _UnitOfWork.Product.Remove(ProductToDelete); 
             _UnitOfWork.Save();
             return Json(new { success = true, message = "Deleted Successful" });

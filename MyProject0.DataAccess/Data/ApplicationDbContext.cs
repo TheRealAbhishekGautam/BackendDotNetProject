@@ -27,6 +27,7 @@ namespace MyProject0.DataAccess.Data
         public DbSet<Company> Companies { get; set; }
         public DbSet<OrderHeader> OrderHeaders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
+        public DbSet<ProductImage> ProductImages { get; set; }
 
         // We can also tell EF Core to add some speciic data inside a table
         // This is called seeding of the data, we are adding rows from here to the database.
