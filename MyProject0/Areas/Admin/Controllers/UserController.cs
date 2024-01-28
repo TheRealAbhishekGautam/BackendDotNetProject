@@ -17,18 +17,20 @@ namespace MyProject0.Areas.Admin.Controllers
     [Authorize(Roles = SD.Role_Admin)]
     public class UserController : Controller
     {
-        // We are directly using DbContext here.
-        // The reason is we are going to access some Identity tables
-        // Which are not present in the UnitOfWork class.
         // To access Identity tables from the DB just use the table name without AspNet
         // Example on the DB we have a table named :- AspNetUsers
         // If I want to access it on the code side I will access it using :- dbContext.Users.ToList();
-        private readonly ApplicationDbContext _db;
+        
         private readonly UserManager<IdentityUser> _userManager;
-        public UserController(ApplicationDbContext db, UserManager<IdentityUser> userManager)
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IUnitOfWork _unitOfWork;
+        public UserController(UserManager<IdentityUser> userManager, 
+            RoleManager<IdentityRole> roleManager, 
+            IUnitOfWork unitOfWork)
         {
-            _db = db;
             _userManager = userManager;
+            _roleManager = roleManager;
+            _unitOfWork = unitOfWork;
         }
         public IActionResult Index()
         {
@@ -38,30 +40,22 @@ namespace MyProject0.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult RoleManagement (string UserId)
         {
-            ApplicationUser UserFromDb = _db.ApplicationUsers.Where(x => x.Id == UserId).Include("Company").FirstOrDefault();
-
-            var RoleListFromDb = _db.Roles.ToList();
-            var CompanyListFromDb = _db.Companies.ToList();
-
-            var CurrentRoleId = _db.UserRoles.FirstOrDefault(x => x.UserId == UserFromDb.Id).RoleId;
-            var CurrentRole = RoleListFromDb.FirstOrDefault(x => x.Id == CurrentRoleId).Name;
-
             RoleManagementVM roleManagementVM = new()
             {
-                MyUser = UserFromDb,
-                RoleList = RoleListFromDb.Select(x => new SelectListItem()
+                MyUser = _unitOfWork.ApplicationUser.Get(x => x.Id == UserId, "Company"),
+                RoleList = _roleManager.Roles.Select(x => new SelectListItem()
                 {
                     Text = x.Name,
                     Value = x.Name
                 }),
-                CompanyList = CompanyListFromDb.Select(x => new SelectListItem()
+                CompanyList = _unitOfWork.Company.GetAll().Select(x => new SelectListItem()
                 {
                     Text = x.Name,
                     Value = x.Id.ToString()
                 })
             };
 
-            roleManagementVM.MyUser.Role = CurrentRole;
+            roleManagementVM.MyUser.Role = _userManager.GetRolesAsync(roleManagementVM.MyUser).GetAwaiter().GetResult().FirstOrDefault();
 
             return View(roleManagementVM);
         }
@@ -70,10 +64,9 @@ namespace MyProject0.Areas.Admin.Controllers
         [ActionName("RoleManagement")]
         public IActionResult UpdateUser(RoleManagementVM roleManagementVM)
         {
-            ApplicationUser OldUserFromDb = _db.ApplicationUsers.Where(x => x.Id == roleManagementVM.MyUser.Id).Include("Company").FirstOrDefault();
+            ApplicationUser OldUserFromDb = _unitOfWork.ApplicationUser.Get(x => x.Id == roleManagementVM.MyUser.Id, "Company", true);
 
-            var OldRoleId = _db.UserRoles.FirstOrDefault(x => x.UserId == OldUserFromDb.Id).RoleId;
-            var OldRole = _db.Roles.FirstOrDefault(x => x.Id == OldRoleId).Name;
+            var OldRole = _userManager.GetRolesAsync(OldUserFromDb).GetAwaiter().GetResult().FirstOrDefault();
 
             // If old and new role is Company User but the company is changed
 
@@ -106,7 +99,11 @@ namespace MyProject0.Areas.Admin.Controllers
                 }
             }
 
-            _db.SaveChanges();
+            // Since we are fetching the OldUserFromDb without AsNotracking,
+            // It will automatically make all the changes to the db.
+
+            // _unitOfWork.ApplicationUser.Update(OldUserFromDb);
+            _unitOfWork.Save();
             TempData["Success"] = "User Updated Successfully";
             return RedirectToAction(nameof(Index));
         }
@@ -116,16 +113,12 @@ namespace MyProject0.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult GetAll ()
         {
-            List<ApplicationUser> UsersList = _db.ApplicationUsers.Include(x => x.Company).ToList();
-
-            var UserRoles = _db.UserRoles.ToList();
-            var Roles = _db.Roles.ToList();
+            List<ApplicationUser> UsersList = _unitOfWork.ApplicationUser.GetAll(IncludeProperties:"Company").ToList();
 
             foreach(var User in UsersList)
             {
                 // Populating roles for all the users
-                var RoleId = UserRoles.FirstOrDefault(x => x.UserId == User.Id).RoleId;
-                User.Role = Roles.FirstOrDefault(x => x.Id == RoleId).Name;
+                User.Role = _userManager.GetRolesAsync(User).GetAwaiter().GetResult().FirstOrDefault();
                 
                 // If Company is null in that case just add an empty string so that js will not throw a warning.
                 if (User.Company == null)
@@ -139,7 +132,7 @@ namespace MyProject0.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult LockUnlockAccount ([FromBody]string UserId)
         {
-            var UserFromDb = _db.ApplicationUsers.FirstOrDefault(x => x.Id == UserId);
+            var UserFromDb = _unitOfWork.ApplicationUser.Get(x => x.Id == UserId);
             if (UserFromDb == null)
             {
                 return Json(new { success = false, message = "Error while Lock/Unlock the Account" });
@@ -155,8 +148,9 @@ namespace MyProject0.Areas.Admin.Controllers
                 // We need to Lock the user account
                 UserFromDb.LockoutEnd = DateTime.Now.AddYears(1000);
             }
-            
-            _db.SaveChanges();
+
+            _unitOfWork.ApplicationUser.Update(UserFromDb);
+            _unitOfWork.Save();
             return Json(new { success = true, message = "Locked/Unlocked Successful" });
         }
 

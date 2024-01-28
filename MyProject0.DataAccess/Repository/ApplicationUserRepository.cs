@@ -7,11 +7,16 @@ namespace MyProject0.DataAccess.Repository
 {
 	public class ApplicationUserRepository : Repository <ApplicationUser> , IApplicationUserRepository
 	{
-        public readonly ApplicationDbContext _db;
+        internal readonly ApplicationDbContext _db;
 		public ApplicationUserRepository(ApplicationDbContext db) : base(db)
 		{
             _db = db;
 		}
+
+        void IApplicationUserRepository.Update(ApplicationUser applicationUser)
+        {
+            _db.ApplicationUsers.Update(applicationUser);
+        }
     }
 }
 
